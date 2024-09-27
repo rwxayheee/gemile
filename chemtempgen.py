@@ -277,6 +277,11 @@ if __name__ == '__main__':
         "5":  {"HO3'"}, # 5' end nucleoside (canonical X5 in Amber)
         # there shouldn't be a 3' end nucleoside variant (always has a phosphate)
         }
+    except_dict = {
+        "C5": "H2", 
+        "DA5": "H1",
+        "DG5": "H1",
+    }
 
     for basename in basenames:
         for suffix in variant_dict:
@@ -284,7 +289,10 @@ if __name__ == '__main__':
             cc.resname = basename+suffix
             print(f"using CCD residue {resname_mapping[basename]} to construct {cc.resname}")
 
-            cc.leaving_name = variant_dict[suffix]
+            if cc.resname in except_dict:
+                cc.leaving_name = except_dict[cc.resname]
+            else:
+                cc.leaving_name = variant_dict[suffix]
             print(f"setting leaving atoms to {cc.leaving_name}")
 
             cc.make_canonical()

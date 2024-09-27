@@ -1,5 +1,9 @@
-from rdkit import Chem
 import gemmi
+
+from rdkit import Chem
+from rdkit import RDLogger
+logger = RDLogger.logger()
+logger.setLevel(RDLogger.CRITICAL)
 
 def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
     """Generate SMILES with atom names in the order of SMILES output."""
@@ -19,17 +23,19 @@ def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
 
 def embed(mol: Chem.Mol, leaving_name: list[str]):
     """Remove atoms from the molecule based on the leaving_name set."""
-    leaving_atoms = [atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in leaving_name] 
+    leaving_atoms = [atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in leaving_name]
 
     if not leaving_atoms: 
-        print(f"No leaving atoms in {leaving_name} found in mol...")
         return mol
     
+    print(f"removing {leaving_name}...") 
     rwmol = Chem.RWMol(mol)
     # remove from the largest index to preserve smaller indexes
     for atom in sorted(leaving_atoms, key=lambda atom: atom.GetIdx(), reverse=True): 
-        rwmol.RemoveAtom(atom.GetIdx()) # linker atoms will have implicit Hs to compensate missing connections
-
+        rwmol.RemoveAtom(atom.GetIdx())
+    # linker atoms will have implicit Hs to compensate missing connections
+    for atom in rwmol.GetAtoms():
+        atom.UpdatePropertyCache()
     return rwmol.GetMol()
 
 
@@ -46,9 +52,9 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
         acidic_protons.extend([mol.GetAtomWithIdx(match[idx]) for match in mol.GetSubstructMatches(qmol)])
     
     if not acidic_protons:
-        print(f"No acidic protons in {acidic_proton_loc.keys()} found in mol")
         return mol
     
+    print(f"deprotonating {list(acidic_proton_loc.keys())}...") 
     rwmol = Chem.RWMol(mol)
     for atom in sorted(acidic_protons, key=lambda atom: atom.GetIdx(), reverse=True):
         rwmol.RemoveAtom(atom.GetIdx())
@@ -180,8 +186,7 @@ class ChemicalComponent:
         leaving_name = {atom_cols['atom_id'][atom_i].strip('"')
                         for atom_i, flag in enumerate(atom_cols['pdbx_leaving_atom_flag']) 
                         if flag == 'Y'}
-        if leaving_name:
-            print(f"leaving atoms from pdbx annotations: {leaving_name}")
+        print(f"leaving atoms from pdbx annotations: {leaving_name}")
         
         return cls(rdkit_mol, resname, smiles_exh, atom_name, leaving_name)
 
@@ -214,60 +219,129 @@ class ChemicalComponent:
 
 if __name__ == '__main__':
 
-    source_cif = '/Users/amyhe/Desktop/7_Mk_for_NA/0_ccd/components.cif'
+    import json
+    
+    # """Download components.cif"""
+    # import subprocess, sys
+    # result = subprocess.run(["curl", "https://files.wwpdb.org/pub/pdb/data/monomers/components.cif"], capture_output=True, text=True)
+    # if result.returncode != 0:
+    #    print(f"Unable to download components.cif from files.wwpdb.org")
+    #    sys.exit(2)
+
+    """Make chemical templates"""
+    source_cif = 'components.cif'
     basenames = ['A', 'U', 'C', 'G', 'DA', 'DT', 'DC', 'DG']
     NA_ccs = []
 
     # nucleotide
     variant_dict = {
-    "_": {}, # free nucleotide
-    "":  {'OP3', 'HOP3', "HO3"}, # embedded nucleotide
-    "5": {"HO3'"} # 5' end nucleotide
-    }
+        "_": {}, # free nucleotide monophosphate
+        "":  {'OP3', 'HOP3', "HO3'"}, # embedded nucleotide 
+        "3": {'OP3', 'HOP3'}, # 3' end nucleotide 
+        "5p":  {"HO3'"}, # 5' end nucleotide (extra phosphate than canonical X5)
+        }
 
     for basename in basenames:
         for suffix in variant_dict:
             cc = ChemicalComponent.from_cif(source_cif, basename)
+            cc.resname += suffix
+            print(f"using CCD residue {basename} to construct {cc.resname}")
+
             cc.leaving_name = variant_dict[suffix]
+            print(f"setting leaving atoms to {cc.leaving_name}")
 
             cc.make_canonical()
             cc.make_embedded()
 
             cc.smiles_exh = make_pretty_smiles(cc.smiles_exh)
-            cc.link_labels = cc.make_link_labels_from_names()
-            cc.resname += suffix
+            cc.make_link_labels_from_names()
+            print(f"setting link labels to {cc.link_labels}")
             cc.parent = basename
 
+            print(f"*** finish making {cc.resname} ***")
             NA_ccs.append(cc)
 
     # nucleoside (no phosphate)
     resname_mapping ={
-    'A': 'ADN',
-    'U': 'URI',
-    'C': 'CTN',
-    'G': 'GMP',
-    'DA': '3D1',
-    'DT': 'THM',
-    'DC': 'DCZ',
-    'DG': 'GNG'
-    ''
-    }
+        'A': 'ADN',
+        'U': 'URI',
+        'C': 'CTN',
+        'G': 'GMP',
+        'DA': '3D1',
+        'DT': 'THM',
+        'DC': 'DCZ',
+        'DG': 'GNG'
+        }
     variant_dict = {
-    "N": {}, # free nucleoside
-    "3":  {'OP3', 'HOP3'}, # 3' end nucleoside
-    }
+        "N": {}, # free nucleoside 
+        "5":  {"HO3'"}, # 5' end nucleoside (canonical X5 in Amber)
+        # there shouldn't be a 3' end nucleoside variant (always has a phosphate)
+        }
 
     for basename in basenames:
         for suffix in variant_dict:
             cc = ChemicalComponent.from_cif(source_cif, resname_mapping[basename])
+            cc.resname = basename+suffix
+            print(f"using CCD residue {resname_mapping[basename]} to construct {cc.resname}")
+
             cc.leaving_name = variant_dict[suffix]
+            print(f"setting leaving atoms to {cc.leaving_name}")
 
             cc.make_canonical()
             cc.make_embedded()
 
             cc.smiles_exh = make_pretty_smiles(cc.smiles_exh)
-            cc.link_labels = cc.make_link_labels_from_names(cc.atom_name)
-            cc.resname += suffix
+            cc.make_link_labels_from_names()
+            print(f"setting link labels to {cc.link_labels}")
             cc.parent = basename
 
+            print(f"*** finish making {cc.resname} ***")
             NA_ccs.append(cc)
+
+
+    """Export chemical templates"""
+    residue_templates = {}
+
+    for cc in NA_ccs:
+        residue_templates[cc.resname] = {
+            "smiles": cc.smiles_exh,
+            "atom_name": cc.resname+".atom_names",
+        }
+        if cc.link_labels:
+            residue_templates[cc.resname]["link_labels"] = cc.resname+".link_labels"
+        else:
+            residue_templates[cc.resname]["link_labels"] = {}
+
+    data_to_export = {"residue_templates": residue_templates}
+    json_str = json.dumps(data_to_export, indent = 4)
+
+    # format link_labels and atom_name to one line
+    for cc in NA_ccs:
+        single_line_atom_name = json.dumps(cc.atom_name, separators=(', ', ': '))
+        json_str = json_str.replace(json.dumps(data_to_export["residue_templates"][cc.resname]["atom_name"], indent = 4), single_line_atom_name)
+        if cc.link_labels:
+            single_line_link_labels = json.dumps(cc.link_labels, separators=(', ', ': '))
+            json_str = json_str.replace(json.dumps(data_to_export["residue_templates"][cc.resname]["link_labels"], indent = 4), single_line_link_labels)
+
+    new_template_json = 'NA_residue_templates.json'
+    with open(new_template_json, 'w') as f:
+        f.write(json_str)
+
+
+    """Export ambiguous mapping"""
+    ambiguous_dict = {basename:[] for basename in basenames}
+    for cc in NA_ccs:
+        ambiguous_dict[cc.parent].append(cc.resname)
+
+    data_to_export = {"ambiguous": {basename:basename+'.resnames' for basename in basenames}}
+    json_str = json.dumps(data_to_export, indent = 4)
+
+    # format ambiguous resnames to one line
+    for basename in ambiguous_dict:
+        single_line_resnames = json.dumps(ambiguous_dict[basename], separators=(', ', ': '))
+        json_str = json_str.replace(json.dumps(data_to_export["ambiguous"][basename], indent = 4), single_line_resnames)
+
+    new_ambiguous_json = 'NA_ambiguous.json'
+    with open(new_ambiguous_json, 'w') as f:
+        f.write(json_str)
+

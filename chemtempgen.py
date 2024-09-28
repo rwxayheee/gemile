@@ -33,9 +33,31 @@ def embed(mol: Chem.Mol, leaving_name: list[str]):
     # remove from the largest index to preserve smaller indexes
     for atom in sorted(leaving_atoms, key=lambda atom: atom.GetIdx(), reverse=True): 
         rwmol.RemoveAtom(atom.GetIdx())
+    
     # linker atoms will have implicit Hs to compensate missing connections
-    for atom in rwmol.GetAtoms():
-        atom.UpdatePropertyCache()
+    rwmol.UpdatePropertyCache()
+    return rwmol.GetMol()
+
+
+def extend(mol: Chem.Mol, recipe: dict[str, tuple[str, str]]):
+    """Add single atom to single atom by a single bond based a given build recipe."""
+   
+    if not recipe: 
+        return mol
+    
+    rwmol = Chem.RWMol(mol)
+    for build in recipe:
+        new_atom_name, new_element = recipe[build]
+        open_atoms = [atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in build]
+
+        for open_atom in open_atoms: 
+            print(f"building new atom {new_atom_name} ({new_element}) at {build}...")
+            new_atom = Chem.Atom(new_element)
+            new_atom.SetProp('atom_id', new_atom_name)
+            new_idx = rwmol.AddAtom(new_atom)
+            rwmol.AddBond(open_atom.GetIdx(), new_idx, Chem.BondType.SINGLE)
+
+    rwmol.UpdatePropertyCache()
     return rwmol.GetMol()
 
 
@@ -54,7 +76,7 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
     if not acidic_protons:
         return mol
     
-    print(f"deprotonating {list(acidic_proton_loc.keys())}...") 
+    print(f"deprotonating {acidic_proton_loc.keys()}...") 
     rwmol = Chem.RWMol(mol)
     for atom in sorted(acidic_protons, key=lambda atom: atom.GetIdx(), reverse=True):
         rwmol.RemoveAtom(atom.GetIdx())
@@ -63,6 +85,7 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
             neighbor_atom = rwmol.GetAtomWithIdx(neighbors[0].GetIdx())
             neighbor_atom.SetFormalCharge(neighbor_atom.GetFormalCharge() - 1)
     
+    rwmol.UpdatePropertyCache()
     return rwmol.GetMol()
 
 
@@ -110,6 +133,7 @@ class ChemicalComponent:
         self.smiles_exh = smiles_exh
         self.atom_name = atom_name
         self.leaving_name = leaving_name
+        self.build_recipe = {} # default to empty dict (no build required)
         self.link_labels = {} # default to empty dict (free molecular form)
         self.parent = resname # default parent to itself
     
@@ -175,8 +199,7 @@ class ChemicalComponent:
                           bond_type_mapping.get(bond_type, Chem.BondType.UNSPECIFIED))
 
         # Finish eidting mol    
-        for atom in rwmol.GetAtoms():
-            atom.UpdatePropertyCache()
+        rwmol.UpdatePropertyCache()
         rdkit_mol = rwmol.GetMol()
             
         # Get Smiles with explicit Hs and ordered atom names
@@ -194,12 +217,13 @@ class ChemicalComponent:
     def make_canonical(self):
         """Deprotonate acidic groups til the canonical (most deprotonated) state."""
         self.rdkit_mol = deprotonate(self.rdkit_mol, acidic_proton_loc = {'[H][O][PX4](=O)([O])[OX2]': 0})
-        self.smiles_exh, self.atom_name = get_smiles_with_atom_names(self.rdkit_mol)
 
     def make_embedded(self):
         """Remove leaving atoms from the molecule."""
         self.rdkit_mol = embed(self.rdkit_mol, self.leaving_name)
-        self.smiles_exh, self.atom_name = get_smiles_with_atom_names(self.rdkit_mol)
+
+    def make_extend(self):
+        self.rdkit_mol = extend(self.rdkit_mol, self.build_recipe)
 
     def make_link_labels_from_names(self, name_to_label_mapping = {'P': '5-prime', "O3'": '3-prime'}):
         """Map atom names to link labels based on a given mapping."""
@@ -228,17 +252,21 @@ if __name__ == '__main__':
     #    print(f"Unable to download components.cif from files.wwpdb.org")
     #    sys.exit(2)
 
+
     """Make chemical templates"""
-    source_cif = 'components.cif'
+
+    source_cif = '/Users/amyhe/Desktop/7_Mk_for_NA/0_ccd/components.cif'
     basenames = ['A', 'U', 'C', 'G', 'DA', 'DT', 'DC', 'DG']
     NA_ccs = []
 
     # nucleotide
     variant_dict = {
-        "_": {}, # free nucleotide monophosphate
-        "":  {'OP3', 'HOP3', "HO3'"}, # embedded nucleotide 
-        "3": {'OP3', 'HOP3'}, # 3' end nucleotide 
-        "5p":  {"HO3'"}, # 5' end nucleotide (extra phosphate than canonical X5)
+        "_": ({}, {}), # free nucleotide monophosphate
+        "":  ({'OP3', 'HOP3', "HO3'"}, {}), # embedded nucleotide 
+        "3": ({'OP3', 'HOP3'}, {}), # 3' end nucleotide 
+        "5p": ({"HO3'"}, {}), # 5' end nucleotide (extra phosphate than canonical X5)
+        "N": ({'OP3', 'HOP3', 'OP2', 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # free nucleoside 
+        "5": ({'OP3', 'HOP3', 'OP2', "HO3'", 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # 5' end nucleoside (canonical X5 in Amber)
         }
 
     for basename in basenames:
@@ -247,56 +275,14 @@ if __name__ == '__main__':
             cc.resname += suffix
             print(f"using CCD residue {basename} to construct {cc.resname}")
 
-            cc.leaving_name = variant_dict[suffix]
+            cc.leaving_name, cc.build_recipe = variant_dict[suffix]
+
             print(f"setting leaving atoms to {cc.leaving_name}")
 
             cc.make_canonical()
             cc.make_embedded()
-
-            cc.smiles_exh = make_pretty_smiles(cc.smiles_exh)
-            cc.make_link_labels_from_names()
-            print(f"setting link labels to {cc.link_labels}")
-            cc.parent = basename
-
-            print(f"*** finish making {cc.resname} ***")
-            NA_ccs.append(cc)
-
-    # nucleoside (no phosphate)
-    resname_mapping ={
-        'A': 'ADN',
-        'U': 'URI',
-        'C': 'CTN',
-        'G': 'GMP',
-        'DA': '3D1',
-        'DT': 'THM',
-        'DC': 'DCZ',
-        'DG': 'L1J'
-        }
-    variant_dict = {
-        "N": {}, # free nucleoside 
-        "5":  {"HO3'"}, # 5' end nucleoside (canonical X5 in Amber)
-        # there shouldn't be a 3' end nucleoside variant (always has a phosphate)
-        }
-    except_dict = {
-        "C5": "H2", 
-        "DA5": "H1",
-        "DG5": "H1",
-    }
-
-    for basename in basenames:
-        for suffix in variant_dict:
-            cc = ChemicalComponent.from_cif(source_cif, resname_mapping[basename])
-            cc.resname = basename+suffix
-            print(f"using CCD residue {resname_mapping[basename]} to construct {cc.resname}")
-
-            if cc.resname in except_dict:
-                cc.leaving_name = except_dict[cc.resname]
-            else:
-                cc.leaving_name = variant_dict[suffix]
-            print(f"setting leaving atoms to {cc.leaving_name}")
-
-            cc.make_canonical()
-            cc.make_embedded()
+            cc.make_extend()
+            cc.smiles_exh, cc.atom_name = get_smiles_with_atom_names(cc.rdkit_mol)
 
             cc.smiles_exh = make_pretty_smiles(cc.smiles_exh)
             cc.make_link_labels_from_names()

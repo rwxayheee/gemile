@@ -270,7 +270,7 @@ if __name__ == '__main__':
         'DA': '3D1',
         'DT': 'THM',
         'DC': 'DCZ',
-        'DG': 'GNG'
+        'DG': 'L1J'
         }
     variant_dict = {
         "N": {}, # free nucleoside 

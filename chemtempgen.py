@@ -223,6 +223,7 @@ class ChemicalComponent:
         self.rdkit_mol = embed(self.rdkit_mol, self.leaving_name)
 
     def make_extend(self):
+        """Build extra atoms in the molecule."""
         self.rdkit_mol = extend(self.rdkit_mol, self.build_recipe)
 
     def make_link_labels_from_names(self, name_to_label_mapping = {'P': '5-prime', "O3'": '3-prime'}):

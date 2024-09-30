@@ -22,7 +22,7 @@ def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
     return smiles_exh, atom_name
 
 
-def embed(mol: Chem.Mol, leaving_name: list[str]):
+def embed(mol: Chem.Mol, leaving_name: list[str]) -> Chem.Mol:
     """Remove atoms from the molecule based on the leaving_name set."""
     leaving_atoms = [atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in leaving_name]
 
@@ -40,7 +40,7 @@ def embed(mol: Chem.Mol, leaving_name: list[str]):
     return rwmol.GetMol()
 
 
-def extend(mol: Chem.Mol, recipe: dict[str, tuple[str, str]]):
+def extend(mol: Chem.Mol, recipe: dict[str, tuple[str, str]]) -> Chem.Mol:
     """Add single atom to single atom by a single bond based a given build recipe."""
    
     if not recipe: 
@@ -99,7 +99,7 @@ def is_chemical_element(symbol: str) -> bool:
         return False
 
 
-def make_pretty_smiles(smi: str): 
+def make_pretty_smiles(smi: str) -> str: 
     """Convert Smiles with allHsExplicit to pretty Smiles to be put on chem templates"""
     # collect the inside square brackets contents
     contents = set()
@@ -310,10 +310,10 @@ def main():
 
     variant_dict = {
         # "_": ({}, {}), # free nucleotide monophosphate
-        # "":  ({'OP3', 'HOP3', "HO3'"}, {}), # embedded nucleotide 
+        "":  ({'OP3', 'HOP3', "HO3'"}, {}), # embedded nucleotide 
         "3": ({'OP3', 'HOP3'}, {}), # 3' end nucleotide 
         "5p": ({"HO3'"}, {}), # 5' end nucleotide (extra phosphate than canonical X5)
-        "N": ({'OP3', 'HOP3', 'OP2', 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # free nucleoside 
+        # "N": ({'OP3', 'HOP3', 'OP2', 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # free nucleoside 
         "5": ({'OP3', 'HOP3', 'OP2', "HO3'", 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # 5' end nucleoside (canonical X5 in Amber)
         }
 

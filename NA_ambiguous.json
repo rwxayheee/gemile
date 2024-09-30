@@ -1,12 +1,12 @@
 {
     "ambiguous": {
-        "A": ["A_", "A", "A3", "A5p", "AN", "A5"],
-        "U": ["U_", "U", "U3", "U5p", "UN", "U5"],
-        "C": ["C_", "C", "C3", "C5p", "CN", "C5"],
-        "G": ["G_", "G", "G3", "G5p", "GN", "G5"],
-        "DA": ["DA_", "DA", "DA3", "DA5p", "DAN", "DA5"],
-        "DT": ["DT_", "DT", "DT3", "DT5p", "DTN", "DT5"],
-        "DC": ["DC_", "DC", "DC3", "DC5p", "DCN", "DC5"],
-        "DG": ["DG_", "DG", "DG3", "DG5p", "DGN", "DG5"]
+        "A": ["A3", "A5p", "AN", "A5"],
+        "U": ["U3", "U5p", "UN", "U5"],
+        "C": ["C3", "C5p", "CN", "C5"],
+        "G": ["G3", "G5p", "GN", "G5"],
+        "DA": ["DA3", "DA5p", "DAN", "DA5"],
+        "DT": ["DT3", "DT5p", "DTN", "DT5"],
+        "DC": ["DC3", "DC5p", "DCN", "DC5"],
+        "DG": ["DG3", "DG5p", "DGN", "DG5"]
     }
 }

@@ -1,4 +1,5 @@
 import gemmi
+import json
 
 from rdkit import Chem
 from rdkit import RDLogger
@@ -237,15 +238,63 @@ class ChemicalComponent:
         self.link_labels = link_labbels
 
 
-# XXX make embedding variants by PATTERNS not names, assign/check link_labels and update smiles/idx
-# XXX read from prepared? enumerate in stepwise? all protonation state variants, alter charge and update smiles/idx
-# XXX group by parent: variants for "ambiguous"; tag synonym Amber and CCD resnames
+def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str):
+    """Export list of chem templates to json"""
+
+    residue_templates = {}
+    for cc in cc_list:
+        residue_templates[cc.resname] = {
+            "smiles": cc.smiles_exh,
+            "atom_name": cc.resname+".atom_names",
+        }
+        if cc.link_labels:
+            residue_templates[cc.resname]["link_labels"] = cc.resname+".link_labels"
+        else:
+            residue_templates[cc.resname]["link_labels"] = {}
+
+    data_to_export = {"residue_templates": residue_templates}
+    json_str = json.dumps(data_to_export, indent = 4)
+
+    # format link_labels and atom_name to one line
+    for cc in cc_list:
+        single_line_atom_name = json.dumps(cc.atom_name, separators=(', ', ': '))
+        json_str = json_str.replace(json.dumps(data_to_export["residue_templates"][cc.resname]["atom_name"], indent = 4), single_line_atom_name)
+        if cc.link_labels:
+            single_line_link_labels = json.dumps(cc.link_labels, separators=(', ', ': '))
+            json_str = json_str.replace(json.dumps(data_to_export["residue_templates"][cc.resname]["link_labels"], indent = 4), single_line_link_labels)
+
+    with open(json_fname, 'w') as f:
+        f.write(json_str)
+    print(f"{json_fname} <-- Json File for New Chemical Templates")
 
 
-if __name__ == '__main__':
+def export_ambiguous_to_json(cc_list: list[ChemicalComponent], json_fname: str):
+    """Export ambiguous dict to json """
 
-    import json
-    
+    basenames = []
+    for cc in cc_list:
+        if cc.parent and cc.parent not in basenames:
+            basenames.append(cc.parent)
+
+    ambiguous_dict = {basename:[] for basename in basenames}
+    for cc in cc_list:
+        ambiguous_dict[cc.parent].append(cc.resname)
+
+    data_to_export = {"ambiguous": {basename:basename+'.resnames' for basename in basenames}}
+    json_str = json.dumps(data_to_export, indent = 4)
+
+    # format ambiguous resnames to one line
+    for basename in ambiguous_dict:
+        single_line_resnames = json.dumps(ambiguous_dict[basename], separators=(', ', ': '))
+        json_str = json_str.replace(json.dumps(data_to_export["ambiguous"][basename], indent = 4), single_line_resnames)
+
+    with open(json_fname, 'w') as f:
+        f.write(json_str)
+    print(f"{json_fname} <-- Json File for Ambiguous Residue Names")
+
+
+def main(): 
+
     # """Download components.cif"""
     # import subprocess, sys
     # result = subprocess.run(["curl", "https://files.wwpdb.org/pub/pdb/data/monomers/components.cif"], capture_output=True, text=True)
@@ -253,17 +302,15 @@ if __name__ == '__main__':
     #    print(f"Unable to download components.cif from files.wwpdb.org")
     #    sys.exit(2)
 
-
     """Make chemical templates"""
 
-    source_cif = '/Users/amyhe/Desktop/7_Mk_for_NA/0_ccd/components.cif'
+    source_cif = 'components.cif'
     basenames = ['A', 'U', 'C', 'G', 'DA', 'DT', 'DC', 'DG']
     NA_ccs = []
 
-    # nucleotide
     variant_dict = {
-        "_": ({}, {}), # free nucleotide monophosphate
-        "":  ({'OP3', 'HOP3', "HO3'"}, {}), # embedded nucleotide 
+        # "_": ({}, {}), # free nucleotide monophosphate
+        # "":  ({'OP3', 'HOP3', "HO3'"}, {}), # embedded nucleotide 
         "3": ({'OP3', 'HOP3'}, {}), # 3' end nucleotide 
         "5p": ({"HO3'"}, {}), # 5' end nucleotide (extra phosphate than canonical X5)
         "N": ({'OP3', 'HOP3', 'OP2', 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # free nucleoside 
@@ -293,50 +340,15 @@ if __name__ == '__main__':
             print(f"*** finish making {cc.resname} ***")
             NA_ccs.append(cc)
 
+    """Export to json files"""
 
-    """Export chemical templates"""
-    residue_templates = {}
-
-    for cc in NA_ccs:
-        residue_templates[cc.resname] = {
-            "smiles": cc.smiles_exh,
-            "atom_name": cc.resname+".atom_names",
-        }
-        if cc.link_labels:
-            residue_templates[cc.resname]["link_labels"] = cc.resname+".link_labels"
-        else:
-            residue_templates[cc.resname]["link_labels"] = {}
-
-    data_to_export = {"residue_templates": residue_templates}
-    json_str = json.dumps(data_to_export, indent = 4)
-
-    # format link_labels and atom_name to one line
-    for cc in NA_ccs:
-        single_line_atom_name = json.dumps(cc.atom_name, separators=(', ', ': '))
-        json_str = json_str.replace(json.dumps(data_to_export["residue_templates"][cc.resname]["atom_name"], indent = 4), single_line_atom_name)
-        if cc.link_labels:
-            single_line_link_labels = json.dumps(cc.link_labels, separators=(', ', ': '))
-            json_str = json_str.replace(json.dumps(data_to_export["residue_templates"][cc.resname]["link_labels"], indent = 4), single_line_link_labels)
-
-    new_template_json = 'NA_residue_templates.json'
-    with open(new_template_json, 'w') as f:
-        f.write(json_str)
+    export_chem_templates_to_json(NA_ccs, 'NA_residue_templates.json')
+    export_ambiguous_to_json(NA_ccs, 'NA_ambiguous.json')
 
 
-    """Export ambiguous mapping"""
-    ambiguous_dict = {basename:[] for basename in basenames}
-    for cc in NA_ccs:
-        ambiguous_dict[cc.parent].append(cc.resname)
+if __name__ == '__main__':
+    main()
 
-    data_to_export = {"ambiguous": {basename:basename+'.resnames' for basename in basenames}}
-    json_str = json.dumps(data_to_export, indent = 4)
 
-    # format ambiguous resnames to one line
-    for basename in ambiguous_dict:
-        single_line_resnames = json.dumps(ambiguous_dict[basename], separators=(', ', ': '))
-        json_str = json_str.replace(json.dumps(data_to_export["ambiguous"][basename], indent = 4), single_line_resnames)
-
-    new_ambiguous_json = 'NA_ambiguous.json'
-    with open(new_ambiguous_json, 'w') as f:
-        f.write(json_str)
-
+# XXX make embedding variants by PATTERNS not names, assign/check link_labels and update smiles/idx
+# XXX read from prepared? enumerate in stepwise? all protonation state variants, alter charge and update smiles/idx

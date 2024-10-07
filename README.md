@@ -4,7 +4,7 @@ gemmi -> rdkit -> chem templates for meeko
 Examples
 
 ```
-├── 0_free_GNP
+├── 0_free_GNP_fromCCD
 │   ├── GNP_templates.json
 │   └── chemtempgen_GNP.py
 ├── 1_embedded_PSU

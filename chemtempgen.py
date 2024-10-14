@@ -22,12 +22,19 @@ def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
     return smiles_exh, atom_name
 
 
-def embed(mol: Chem.Mol, leaving_name: list[str]) -> Chem.Mol:
+def embed(mol: Chem.Mol, leaving_name: list[str], alsoHs = True) -> Chem.Mol:
     """Remove atoms from the molecule based on the leaving_name set."""
-    leaving_atoms = [atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in leaving_name]
+    leaving_atoms = set([atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in leaving_name])
 
     if not leaving_atoms: 
         return mol
+
+    if alsoHs:
+        leaving_Hs = []
+        for atom in leaving_atoms:
+            if atom.GetAtomicNum() > 1:
+                leaving_Hs += [ne for ne in atom.GetNeighbors() if ne.GetAtomicNum()==1]
+        leaving_atoms.update(leaving_Hs)
     
     print(f"removing {leaving_name}...") 
     rwmol = Chem.RWMol(mol)
@@ -302,11 +309,11 @@ def main():
 
     variant_dict = {
         # "_": ({}, {}), # free nucleotide monophosphate
-        "":  ({'OP3', 'HOP3', "HO3'"}, {}), # embedded nucleotide 
-        "3": ({'OP3', 'HOP3'}, {}), # 3' end nucleotide 
+        "":  ({'OP3', "HO3'"}, {}), # embedded nucleotide 
+        "3": ({'OP3'}, {}), # 3' end nucleotide 
         "5p": ({"HO3'"}, {}), # 5' end nucleotide (extra phosphate than canonical X5)
         # "N": ({'OP3', 'HOP3', 'OP2', 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # free nucleoside 
-        "5": ({'OP3', 'HOP3', 'OP2', "HO3'", 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # 5' end nucleoside (canonical X5 in Amber)
+        "5": ({'OP3', 'OP2', "HO3'", 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # 5' end nucleoside (canonical X5 in Amber)
         }
 
     for basename in basenames:

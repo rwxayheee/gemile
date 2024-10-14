@@ -1,4 +1,14 @@
 {
+    "ambiguous": {
+        "A": ["A", "A3", "A5p", "A5"],
+        "U": ["U", "U3", "U5p", "U5"],
+        "C": ["C", "C3", "C5p", "C5"],
+        "G": ["G", "G3", "G5p", "G5"],
+        "DA": ["DA", "DA3", "DA5p", "DA5"],
+        "DT": ["DT", "DT3", "DT5p", "DT5"],
+        "DC": ["DC", "DC3", "DC5p", "DC5"],
+        "DG": ["DG", "DG3", "DG5p", "DG5"]
+    },
     "residue_templates": {
         "A": {
             "smiles": "[H]OC1([H])C([H])(N2C([H])=NC3=C2N=C([H])N=C3N([H])[H])OC([H])(C([H])([H])OP(=O)[O-])C1([H])O",

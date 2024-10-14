@@ -243,6 +243,16 @@ class ChemicalComponent:
 def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str):
     """Export list of chem templates to json"""
 
+    basenames = []
+    for cc in cc_list:
+        if cc.parent and cc.parent not in basenames:
+            basenames.append(cc.parent)
+    ambiguous_dict = {basename:[] for basename in basenames}
+    for cc in cc_list:
+        ambiguous_dict[cc.parent].append(cc.resname)
+
+    data_to_export = {"ambiguous": {basename:basename+'.resnames' for basename in basenames}}
+
     residue_templates = {}
     for cc in cc_list:
         residue_templates[cc.resname] = {
@@ -254,8 +264,13 @@ def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: 
         else:
             residue_templates[cc.resname]["link_labels"] = {}
 
-    data_to_export = {"residue_templates": residue_templates}
+    data_to_export.update({"residue_templates": residue_templates})
     json_str = json.dumps(data_to_export, indent = 4)
+
+    # format ambiguous resnames to one line
+    for basename in ambiguous_dict:
+        single_line_resnames = json.dumps(ambiguous_dict[basename], separators=(', ', ': '))
+        json_str = json_str.replace(json.dumps(data_to_export["ambiguous"][basename], indent = 4), single_line_resnames)
 
     # format link_labels and atom_name to one line
     for cc in cc_list:
@@ -268,31 +283,6 @@ def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: 
     with open(json_fname, 'w') as f:
         f.write(json_str)
     print(f"{json_fname} <-- Json File for New Chemical Templates")
-
-
-def export_ambiguous_to_json(cc_list: list[ChemicalComponent], json_fname: str):
-    """Export ambiguous dict to json """
-
-    basenames = []
-    for cc in cc_list:
-        if cc.parent and cc.parent not in basenames:
-            basenames.append(cc.parent)
-
-    ambiguous_dict = {basename:[] for basename in basenames}
-    for cc in cc_list:
-        ambiguous_dict[cc.parent].append(cc.resname)
-
-    data_to_export = {"ambiguous": {basename:basename+'.resnames' for basename in basenames}}
-    json_str = json.dumps(data_to_export, indent = 4)
-
-    # format ambiguous resnames to one line
-    for basename in ambiguous_dict:
-        single_line_resnames = json.dumps(ambiguous_dict[basename], separators=(', ', ': '))
-        json_str = json_str.replace(json.dumps(data_to_export["ambiguous"][basename], indent = 4), single_line_resnames)
-
-    with open(json_fname, 'w') as f:
-        f.write(json_str)
-    print(f"{json_fname} <-- Json File for Ambiguous Residue Names")
 
 
 def main(): 
@@ -345,7 +335,6 @@ def main():
     """Export to json files"""
 
     export_chem_templates_to_json(NA_ccs, 'NA_residue_templates.json')
-    export_ambiguous_to_json(NA_ccs, 'NA_ambiguous.json')
 
 
 if __name__ == '__main__':

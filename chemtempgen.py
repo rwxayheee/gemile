@@ -6,21 +6,6 @@ from rdkit import RDLogger
 logger = RDLogger.logger()
 logger.setLevel(RDLogger.CRITICAL)
 
-def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
-    """Generate SMILES with atom names in the order of SMILES output."""
-    # allHsExplicit may expose the implicit Hs of linker atoms to Smiles; the implicit Hs don't have names
-    smiles_exh = Chem.MolToSmiles(mol, allHsExplicit=True)
-
-    smiles_atom_output_order = mol.GetProp('_smilesAtomOutputOrder')
-    delimiters = ['[', ']', ',']
-    for delimiter in delimiters:
-        smiles_atom_output_order = smiles_atom_output_order.replace(delimiter, ' ')
-    smiles_output_order = [int(x) for x in smiles_atom_output_order.split()]
-
-    atom_name = [mol.GetAtomWithIdx(atom_i).GetProp('atom_id') for atom_i in smiles_output_order]
-
-    return smiles_exh, atom_name
-
 
 def embed(mol: Chem.Mol, leaving_name: list[str], alsoHs = True) -> Chem.Mol:
     """Remove atoms from the molecule based on the leaving_name set."""
@@ -97,13 +82,20 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
     return rwmol.GetMol()
 
 
-def is_chemical_element(symbol: str) -> bool:
-    """Check if a string represents a valid chemical element."""
-    try:
-        return Chem.GetPeriodicTable().GetAtomicNumber(symbol) > 0
-    # rdkit throws RuntimeError if invalid
-    except RuntimeError:
-        return False
+def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
+    """Generate SMILES with atom names in the order of SMILES output."""
+    # allHsExplicit may expose the implicit Hs of linker atoms to Smiles; the implicit Hs don't have names
+    smiles_exh = Chem.MolToSmiles(mol, allHsExplicit=True)
+
+    smiles_atom_output_order = mol.GetProp('_smilesAtomOutputOrder')
+    delimiters = ['[', ']', ',']
+    for delimiter in delimiters:
+        smiles_atom_output_order = smiles_atom_output_order.replace(delimiter, ' ')
+    smiles_output_order = [int(x) for x in smiles_atom_output_order.split()]
+
+    atom_name = [mol.GetAtomWithIdx(atom_i).GetProp('atom_id') for atom_i in smiles_output_order]
+
+    return smiles_exh, atom_name
 
 
 def make_pretty_smiles(smi: str) -> str: 
@@ -120,6 +112,14 @@ def make_pretty_smiles(smi: str) -> str:
             contents.add(content)
         elif inside_bracket:
             content += char
+
+    def is_chemical_element(symbol: str) -> bool:
+        """Check if a string represents a valid chemical element."""
+        try:
+            return Chem.GetPeriodicTable().GetAtomicNumber(symbol) > 0
+        # rdkit throws RuntimeError if invalid
+        except RuntimeError:
+            return False
 
     for content in contents:
         # keep [H] for explicit Hs

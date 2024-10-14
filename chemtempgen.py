@@ -162,6 +162,8 @@ class ChemicalComponent:
         atom_elements = atom_cols['type_symbol']
 
         for idx, element in enumerate(atom_elements):
+            if len(element)==2:
+                element = element[0] + element[1].lower()
             rdkit_atom = Chem.Atom(element)
             for attr in atom_attributes:
                 rdkit_atom.SetProp(attr, atom_cols[attr][idx])
@@ -170,7 +172,7 @@ class ChemicalComponent:
                 rdkit_atom.SetProp('atom_id', raw_name.strip('"'))
             target_charge = atom_cols['charge'][idx]
             if target_charge!='0':
-                rdkit_atom.SetFormalCharge(float(target_charge)) # this is usually int
+                rdkit_atom.SetFormalCharge(int(target_charge)) # this needs to be int for rdkit
             rwmol.AddAtom(rdkit_atom)
 
         # Map atom_id (atom names) with rdkit idx

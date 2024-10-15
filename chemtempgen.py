@@ -15,10 +15,7 @@ def embed(mol: Chem.Mol, leaving_name: list[str], alsoHs = True) -> Chem.Mol:
         return mol
 
     if alsoHs:
-        leaving_Hs = []
-        for atom in leaving_atoms:
-            if atom.GetAtomicNum() > 1:
-                leaving_Hs += [ne for ne in atom.GetNeighbors() if ne.GetAtomicNum()==1]
+        leaving_Hs = [ne for atom in leaving_atoms if atom.GetAtomicNum() > 1 for ne in atom.GetNeighbors() if ne.GetAtomicNum() == 1]
         leaving_atoms.update(leaving_Hs)
     
     print(f"removing {leaving_name}...") 

@@ -5,20 +5,74 @@ from rdkit import Chem
 from rdkit import RDLogger
 logger = RDLogger.logger()
 logger.setLevel(RDLogger.CRITICAL)
+import logging
 
 
-def embed(mol: Chem.Mol, leaving_name: list[str], alsoHs = True) -> Chem.Mol:
+def embed(mol: Chem.Mol, leaving_name: list[str], 
+          alsoHs = True) -> Chem.Mol:
     """Remove atoms from the molecule based on the leaving_name set."""
     leaving_atoms = set([atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in leaving_name])
 
     if not leaving_atoms: 
+        logging.warning("Molecule doesn't contain atoms with leaving_name, embed returning original molecule")
         return mol
 
     if alsoHs:
         leaving_Hs = [ne for atom in leaving_atoms if atom.GetAtomicNum() > 1 for ne in atom.GetNeighbors() if ne.GetAtomicNum() == 1]
         leaving_atoms.update(leaving_Hs)
     
-    print(f"removing {leaving_name}...") 
+    rwmol = Chem.RWMol(mol)
+    # remove from the largest index to preserve smaller indexes
+    for atom in sorted(leaving_atoms, key=lambda atom: atom.GetIdx(), reverse=True): 
+        rwmol.RemoveAtom(atom.GetIdx())
+    
+    # linker atoms will have implicit Hs to compensate missing connections
+    rwmol.UpdatePropertyCache()
+    return rwmol.GetMol()
+
+
+def embed_by_pattern(mol: Chem.Mol, leaving_smarts_loc: dict[str, set[str]], 
+                     alsoHs = True, target_smarts = "[O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]") -> Chem.Mol:
+    
+    tmol = Chem.MolFromSmarts(target_smarts)
+    match_target = mol.GetSubstructMatches(tmol)
+    if not match_target:
+        logging.warning("Molecule doesn't contain target_smarts, embed_by_pattern returning original molecule")
+        return mol
+    if len(match_target) > 1:
+        logging.warning("Molecule contain multiple copies of target_smarts, embed_by_pattern returning original molecule")
+        return mol
+    match_target = match_target[0]
+    
+    leaving_atoms = set()
+    for leaving_smarts in leaving_smarts_loc: 
+        lmol = Chem.MolFromSmarts(leaving_smarts)
+        match_leaving = mol.GetSubstructMatches(lmol)
+
+        if not match_leaving:
+            logging.warning(f"Molecule doesn't contain leaving_smarts: {leaving_smarts}, skipping")
+            continue
+        if len(match_leaving[0]) <= max(leaving_smarts_loc[leaving_smarts]):
+            logging.warning("match copies in match_leaving won't contain the required leaving_smarts_loc, skipping")
+            continue
+
+        for match_copy in match_leaving:
+            match_in_copy = [idx for idx in match_copy if match_copy.index(idx) in leaving_smarts_loc[leaving_smarts]]
+            match_leaving_atoms = set([mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_target])
+            if match_leaving_atoms: 
+                leaving_atoms.update(match_leaving_atoms)
+
+    for atom in leaving_atoms:
+        print(atom.GetProp("atom_id"))
+
+    if not leaving_atoms:
+        logging.warning("Molecule doesn't contain matching atoms for leaving_smarts_loc, embed_by_pattern returning original molecule")
+        return mol
+    
+    if alsoHs:
+        leaving_Hs = [ne for atom in leaving_atoms if atom.GetAtomicNum() > 1 for ne in atom.GetNeighbors() if ne.GetAtomicNum() == 1]
+        leaving_atoms.update(leaving_Hs)
+    
     rwmol = Chem.RWMol(mol)
     # remove from the largest index to preserve smaller indexes
     for atom in sorted(leaving_atoms, key=lambda atom: atom.GetIdx(), reverse=True): 
@@ -64,9 +118,9 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
         acidic_protons.extend([mol.GetAtomWithIdx(match[idx]) for match in mol.GetSubstructMatches(qmol)])
     
     if not acidic_protons:
+        logging.warning("Molecule doesn't contain matching atoms with acidic_proton_loc, deprotonate returning original molecule")
         return mol
-    
-    print(f"deprotonating {acidic_proton_loc.keys()}...") 
+     
     rwmol = Chem.RWMol(mol)
     for atom in sorted(acidic_protons, key=lambda atom: atom.GetIdx(), reverse=True):
         rwmol.RemoveAtom(atom.GetIdx())
@@ -226,8 +280,12 @@ class ChemicalComponent:
         self.rdkit_mol = deprotonate(self.rdkit_mol, acidic_proton_loc = {'[H][O][PX4](=O)([O])[OX2]': 0})
 
     def make_embedded(self):
-        """Remove leaving atoms from the molecule."""
+        """Remove leaving atoms from the molecule by atom names."""
         self.rdkit_mol = embed(self.rdkit_mol, self.leaving_name)
+
+    def make_embed_by_pattern(self, leaving_smarts_loc):
+        """Remove leaving atoms from the molecule by pattern."""
+        self.rdkit_mol = embed_by_pattern(self.rdkit_mol, leaving_smarts_loc)
 
     def make_extend(self):
         """Build extra atoms in the molecule."""

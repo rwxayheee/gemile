@@ -8,6 +8,17 @@ logger.setLevel(RDLogger.CRITICAL)
 import logging
 
 
+def remove_atom_from_mol(mol: Chem.Mol, leaving_atoms: set[Chem.Mol]) -> Chem.Mol:
+    rwmol = Chem.RWMol(mol)
+    # remove from the largest index to preserve smaller indexes
+    for atom in sorted(leaving_atoms, key=lambda atom: atom.GetIdx(), reverse=True): 
+        rwmol.RemoveAtom(atom.GetIdx())
+    
+    # linker atoms will have implicit Hs to compensate missing connections
+    rwmol.UpdatePropertyCache()
+    return rwmol.GetMol()
+
+
 def embed(mol: Chem.Mol, leaving_name: list[str], 
           alsoHs = True) -> Chem.Mol:
     """Remove atoms from the molecule based on the leaving_name set."""
@@ -21,14 +32,7 @@ def embed(mol: Chem.Mol, leaving_name: list[str],
         leaving_Hs = [ne for atom in leaving_atoms if atom.GetAtomicNum() > 1 for ne in atom.GetNeighbors() if ne.GetAtomicNum() == 1]
         leaving_atoms.update(leaving_Hs)
     
-    rwmol = Chem.RWMol(mol)
-    # remove from the largest index to preserve smaller indexes
-    for atom in sorted(leaving_atoms, key=lambda atom: atom.GetIdx(), reverse=True): 
-        rwmol.RemoveAtom(atom.GetIdx())
-    
-    # linker atoms will have implicit Hs to compensate missing connections
-    rwmol.UpdatePropertyCache()
-    return rwmol.GetMol()
+    return remove_atom_from_mol(mol, leaving_atoms)
 
 
 def embed_by_pattern(mol: Chem.Mol, leaving_smarts_loc: dict[str, set[str]], 
@@ -73,14 +77,7 @@ def embed_by_pattern(mol: Chem.Mol, leaving_smarts_loc: dict[str, set[str]],
         leaving_Hs = [ne for atom in leaving_atoms if atom.GetAtomicNum() > 1 for ne in atom.GetNeighbors() if ne.GetAtomicNum() == 1]
         leaving_atoms.update(leaving_Hs)
     
-    rwmol = Chem.RWMol(mol)
-    # remove from the largest index to preserve smaller indexes
-    for atom in sorted(leaving_atoms, key=lambda atom: atom.GetIdx(), reverse=True): 
-        rwmol.RemoveAtom(atom.GetIdx())
-    
-    # linker atoms will have implicit Hs to compensate missing connections
-    rwmol.UpdatePropertyCache()
-    return rwmol.GetMol()
+    return remove_atom_from_mol(mol, leaving_atoms)
 
 
 def extend(mol: Chem.Mol, recipe: dict[str, tuple[str, str]]) -> Chem.Mol:

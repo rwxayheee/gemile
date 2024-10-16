@@ -213,11 +213,10 @@ class ChemicalComponent:
     def __init__(self, rdkit_mol: Chem.Mol, resname: str, smiles_exh: str, atom_name: list[str]):
         self.rdkit_mol = rdkit_mol
         self.resname = resname
+        self.parent = resname # default parent to itself
         self.smiles_exh = smiles_exh
         self.atom_name = atom_name
-        self.build_recipe = {} # default to empty dict (no build required)
         self.link_labels = {} # default to empty dict (free molecular form)
-        self.parent = resname # default parent to itself
     
     @classmethod
     # requires gemmi
@@ -315,8 +314,30 @@ class ChemicalComponent:
         self.smiles_exh = get_pretty_smiles(self.smiles_exh)
         return self
 
-    def make_link_labels_from_names(self, name_to_label_mapping = {'P': '5-prime', "O3'": '3-prime'}):
+    def make_link_labels_from_patterns(self, pattern_to_label_mapping = {}):
+        """Map patterns to link labels based on a given mapping."""
+        if not pattern_to_label_mapping:
+            return self
+
+        for pattern in pattern_to_label_mapping:
+            atom_idx = get_atom_idx_by_patterns(self.rdkit_mol, allowed_smarts = Chem.MolToSmarts(self.rdkit_mol), 
+                                                wanted_smarts_loc = {pattern: {0}})
+            if not atom_idx:
+                logging.warning(f"Molecule doesn't contain pattern: {pattern} -> no linker label will be added. ")
+            elif len(atom_idx) > 1:
+                logging.warning(f"Molecule contain multiple copies of pattern: {pattern} -> no linker label will be added. ")
+            else:
+                atom_idx = next(iter(atom_idx))
+                name = self.rdkit_mol.GetAtomWithIdx(atom_idx).GetProp('atom_id')
+                self.link_labels.update({str(self.atom_name.index(name)): pattern_to_label_mapping[pattern]})
+
+        return self
+    
+    def make_link_labels_from_names(self, name_to_label_mapping = {}):
         """Map atom names to link labels based on a given mapping."""
+        if not name_to_label_mapping:
+            return self
+
         link_labbels = {}
         for atom in self.rdkit_mol.GetAtoms():
             if atom.GetProp('atom_id') in name_to_label_mapping:
@@ -325,7 +346,6 @@ class ChemicalComponent:
                     link_labbels[str(self.atom_name.index(name))] = name_to_label_mapping[name]
         self.link_labels = link_labbels
         return self
-
 
 def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str):
     """Export list of chem templates to json"""

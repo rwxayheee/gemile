@@ -173,7 +173,7 @@ def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
     return smiles_exh, atom_name
 
 
-def make_pretty_smiles(smi: str) -> str: 
+def get_pretty_smiles(smi: str) -> str: 
     """Convert Smiles with allHsExplicit to pretty Smiles to be put on chem templates"""
     # collect the inside square brackets contents
     contents = set()
@@ -305,10 +305,10 @@ class ChemicalComponent:
         """Build and name explicit hydrogens for atoms with implicit Hs by atom names and/or patterns."""
         self.rdkit_mol = cap(self.rdkit_mol, allowed_smarts = allowed_smarts, 
                              capping_names = capping_names, capping_smarts_loc = capping_smarts_loc) 
-
-    def make_extend(self):
-        """Build extra atoms in the molecule."""
-        self.rdkit_mol = extend(self.rdkit_mol, self.build_recipe)
+        
+    def make_pretty_smiles(self):
+        """Build and name explicit hydrogens for atoms with implicit Hs by atom names and/or patterns."""
+        self.smiles_exh = get_pretty_smiles(self.smiles_exh)
 
     def make_link_labels_from_names(self, name_to_label_mapping = {'P': '5-prime', "O3'": '3-prime'}):
         """Map atom names to link labels based on a given mapping."""

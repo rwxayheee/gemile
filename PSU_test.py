@@ -31,8 +31,7 @@ cc.make_capped(allowed_smarts = "[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]",
                capping_smarts_loc = {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}})
 
 cc.smiles_exh, cc.atom_name = get_smiles_with_atom_names(cc.rdkit_mol)
-cc.smiles_exh = make_pretty_smiles(cc.smiles_exh)
-print(cc.smiles_exh, cc.atom_name)
+cc.make_pretty_smiles()
 
 
 cc.make_link_labels_from_names()

@@ -1,9 +1,0 @@
-{
-    "residue_templates": {
-        "GNP": {
-            "smiles": "[H]OC1([H])C([H])(N2C([H])=NC3=C2N=C(N([H])[H])N([H])C3=O)OC([H])(C([H])([H])OP(=O)([O-])OP(=O)([O-])N([H])P(=O)([O-])[O-])C1([H])O[H]",
-            "atom_name": ["HO2'", "O2'", "C2'", "H2'", "C1'", "H1'", "N9", "C8", "H8", "N7", "C5", "C4", "N3", "C2", "N2", "HN21", "HN22", "N1", "HN1", "C6", "O6", "O4'", "C4'", "H4'", "C5'", "H5'2", "H5'1", "O5'", "PA", "O1A", "O2A", "O3A", "PB", "O1B", "O2B", "N3B", "HNB3", "PG", "O1G", "O2G", "O3G", "C3'", "H3'", "O3'", "HO3'"],
-            "link_labels": {}
-        }
-    }
-}

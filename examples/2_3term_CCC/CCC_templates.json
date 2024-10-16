@@ -1,9 +1,0 @@
-{
-    "residue_templates": {
-        "CCC3": {
-            "smiles": "[H]C1=C([H])N(C2([H])OC([H])(C([H])([H])OP(=O)[O-])C3([H])OP(=O)([O-])OC23[H])C(=O)N=C1N([H])[H]",
-            "atom_name": ["H5", "C5", "C6", "H6", "N1", "C1'", "H1'", "O4'", "C4'", "H4'", "C5'", "H5'", "H5''", "O5'", "P", "OP1", "OP2", "C3'", "H3'", "O3'", "PC", "O1C", "O2C", "O2'", "C2'", "H2'", "C2", "O2", "N3", "C4", "N4", "H41", "H42"],
-            "link_labels": {"14": "5-prime"}
-        }
-    }
-}

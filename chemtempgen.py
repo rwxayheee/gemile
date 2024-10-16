@@ -44,10 +44,8 @@ def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str,
                 continue
             for match_copy in match_wanted:
                 match_in_copy = [idx for idx in match_copy if match_copy.index(idx) in wanted_smarts_loc[wanted_smarts]]
-                print(match_copy, match_in_copy)
                 match_wanted_atoms = set([mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed])
                 if match_wanted_atoms: 
-                    print([atom.GetProp("atom_id") for atom in match_wanted_atoms])
                     wanted_atoms_idx.update([atom.GetIdx() for atom in match_wanted_atoms])
     
     return wanted_atoms_idx
@@ -294,9 +292,9 @@ class ChemicalComponent:
         return cls(rdkit_mol, resname, smiles_exh, atom_name)
 
 
-    def make_canonical(self):
+    def make_canonical(self, acidic_proton_loc):
         """Deprotonate acidic groups til the canonical (most deprotonated) state."""
-        self.rdkit_mol = deprotonate(self.rdkit_mol, acidic_proton_loc = {'[H][O][PX4](=O)([O])[OX2]': 0})
+        self.rdkit_mol = deprotonate(self.rdkit_mol, acidic_proton_loc = acidic_proton_loc)
 
     def make_embedded(self, allowed_smarts, leaving_names = {}, leaving_smarts_loc = {}):
         """Remove leaving atoms from the molecule by atom names and/or patterns."""

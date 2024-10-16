@@ -8,16 +8,16 @@ logger.setLevel(RDLogger.CRITICAL)
 import logging
 
 
-def get_atom_idx_by_names(mol: Chem.Mol, wanted_names: set[str] = {}) -> set[int]:
+def get_atom_idx_by_names(mol: Chem.Mol, wanted_names: set[str] = set()) -> set[int]:
     
     if not wanted_names:
         return set()
     
-    wanted_atoms_by_names = set([atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in wanted_names])
-    names_not_found = wanted_names.difference(set([atom.GetProp('atom_id') for atom in wanted_atoms_by_names]))
+    wanted_atoms_by_names = set(atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in wanted_names)
+    names_not_found = wanted_names.difference({atom.GetProp('atom_id') for atom in wanted_atoms_by_names})
     if names_not_found: 
         logging.warning(f"Molecule doesn't contain the requested atoms with names: {names_not_found} -> continue with found names... ")
-    return set([atom.GetIdx() for atom in wanted_atoms_by_names])
+    return set(atom.GetIdx() for atom in wanted_atoms_by_names)
 
 
 def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str, 
@@ -44,16 +44,16 @@ def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str,
                 continue
             for match_copy in match_wanted:
                 match_in_copy = [idx for idx in match_copy if match_copy.index(idx) in wanted_smarts_loc[wanted_smarts]]
-                match_wanted_atoms = set([mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed])
+                match_wanted_atoms = set(mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed)
                 if match_wanted_atoms: 
-                    wanted_atoms_idx.update([atom.GetIdx() for atom in match_wanted_atoms])
+                    wanted_atoms_idx.update(atom.GetIdx() for atom in match_wanted_atoms)
     
     return wanted_atoms_idx
 
 
 def embed(mol: Chem.Mol, allowed_smarts: str, 
-          leaving_names: set[str] = {}, leaving_smarts_loc: dict[str, set[int]] = {}, 
-          alsoHs = True) -> Chem.Mol:
+          leaving_names: set[str] = set(), leaving_smarts_loc: dict[str, set[int]] = {}, 
+          alsoHs: bool = True) -> Chem.Mol:
     """
     Remove atoms from the molecule based the union of
     (a) leaving_names: list of atom IDs (names), and
@@ -73,7 +73,7 @@ def embed(mol: Chem.Mol, allowed_smarts: str,
 
     if leaving_atoms_idx and alsoHs:
         leaving_Hs = [ne for atom_idx in leaving_atoms_idx for ne in mol.GetAtomWithIdx(atom_idx).GetNeighbors() if ne.GetAtomicNum() == 1]
-        leaving_atoms_idx.update(set([atom.GetIdx() for atom in leaving_Hs]))
+        leaving_atoms_idx.update(atom.GetIdx() for atom in leaving_Hs)
 
     if not leaving_atoms_idx:
         logging.warning(f"No matched atoms to delete -> returning original mol...")
@@ -87,7 +87,7 @@ def embed(mol: Chem.Mol, allowed_smarts: str,
 
 
 def cap(mol: Chem.Mol, allowed_smarts: str, 
-        capping_names: set[str] = {}, capping_smarts_loc: dict[str, set[int]] = {}) -> Chem.Mol:
+        capping_names: set[str] = set(), capping_smarts_loc: dict[str, set[int]] = {}) -> Chem.Mol:
     """Add hydrogens to atoms with implicit hydrogens based on the union of
     (a) capping_names: list of atom IDs (names), and
     (b) capping_smarts_loc: dict to map substructure SMARTS patterns with 
@@ -111,10 +111,10 @@ def cap(mol: Chem.Mol, allowed_smarts: str,
     def get_max_Hid(mol: Chem.Mol) -> int:
         all_Hids = [atom.GetProp('atom_id') for atom in mol.GetAtoms() if atom.GetAtomicNum()==1]
         regular_ids = [Hid for Hid in all_Hids if Hid[0]=='H' and Hid[1:].isdigit()]
-        return max([int(x[1:]) for x in regular_ids])
+        return max(int(x[1:]) for x in regular_ids)
     
     rwmol = Chem.RWMol(mol)
-    new_Hid = get_max_Hid(mol)+1
+    new_Hid = get_max_Hid(mol) + 1
     for atom_idx in capping_atoms_idx:
         needed_Hs = mol.GetAtomWithIdx(atom_idx).GetNumImplicitHs()
         if needed_Hs == 0:
@@ -139,7 +139,7 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
     acidic_protons_idx = set()
     for smarts_pattern, idx in acidic_proton_loc.items():
         qmol = Chem.MolFromSmarts(smarts_pattern)
-        acidic_protons_idx.update(set([match[idx] for match in mol.GetSubstructMatches(qmol)]))
+        acidic_protons_idx.update(match[idx] for match in mol.GetSubstructMatches(qmol))
     
     if not acidic_protons_idx:
         logging.warning(f"Molecule doesn't contain matching  with acidic_proton_loc {acidic_proton_loc} -> deprotonate returning original molecule")

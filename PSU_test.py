@@ -9,12 +9,8 @@ cc.make_embedded(allowed_smarts = "[O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][C
                  leaving_names = {"HO3'"}, 
                  leaving_smarts_loc = {"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}})
 
-for atom in cc.rdkit_mol.GetAtoms():
-    num_implicit_hs = atom.GetNumImplicitHs()
-    print(atom.GetProp('atom_id'), num_implicit_hs)
-
-cc.build_recipe = {"O5'": ("HO5'", "H")}
-cc.make_extend()
+cc.make_capped(allowed_smarts = "[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]", 
+               capping_smarts_loc = {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}})
 
 cc.smiles_exh, cc.atom_name = get_smiles_with_atom_names(cc.rdkit_mol)
 cc.smiles_exh = make_pretty_smiles(cc.smiles_exh)

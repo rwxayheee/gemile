@@ -110,49 +110,6 @@ def extend(mol: Chem.Mol, recipe: dict[str, tuple[str, str]]) -> Chem.Mol:
     return rwmol.GetMol()
 
 
-def cap(mol: Chem.Mol, allowed_smarts: str, 
-        capping_names: set[str] = {}, capping_smarts_loc: dict[str, set[int]] = {}) -> Chem.Mol:
-    """Add hydrogens to atoms with implicit hydrogens based on the union of
-    (a) capping_names: list of atom IDs (names), and
-    (b) capping_smarts_loc: dict to map substructure SMARTS patterns with 
-    tuple of 0-based indicies for atoms."""
-   
-    if not capping_names and not capping_smarts_loc:
-        return mol
-    
-    capping_atoms_idx = set()
-    
-    if capping_names:
-        capping_atoms_idx.update(get_atom_idx_by_names(mol, capping_names))
-
-    if capping_smarts_loc:
-        capping_atoms_idx.update(get_atom_idx_by_patterns(mol, allowed_smarts, capping_smarts_loc))
-
-    if not capping_atoms_idx:
-        logging.warning(f"No matched atoms to cap -> returning original mol...")
-        return mol
-    
-    def get_max_Hid(mol: Chem.Mol) -> int:
-        all_Hids = [atom.GetProp('atom_id') for atom in mol.GetAtoms() if atom.GetAtomicNum()==1]
-        regular_ids = [Hid for Hid in all_Hids if Hid[0]=='H' and Hid[1:].isdigit()]
-        return max([int(x[1:]) for x in regular_ids])
-    
-    rwmol = Chem.RWMol(mol)
-    new_Hid = get_max_Hid(mol)+1
-    for atom_idx in capping_atoms_idx:
-        needed_Hs = mol.GetAtomWithIdx(atom_idx).GetNumImplicitHs()
-        if needed_Hs == 0:
-            logging.warning(f"Atom # {atom_idx} ({mol.GetAtomWithIdx(atom_idx).GetProp('atom_id')}) in mol doesn't have implicit Hs -> continue with next atom... ")
-        else:
-            new_atom = Chem.Atom("H")
-            new_atom.SetProp('atom_id', f"H{new_Hid}")
-            new_Hid += 1
-            new_idx = rwmol.AddAtom(new_atom)
-            rwmol.AddBond(atom_idx, new_idx, Chem.BondType.SINGLE)
-    rwmol.UpdatePropertyCache()
-    return rwmol.GetMol()
-
-
 def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
     """Remove acidic protons from the molecule based on acidic_proton_loc"""
     # acidic_proton_loc is a mapping 
@@ -166,7 +123,7 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
         acidic_protons_idx.update(set([match[idx] for match in mol.GetSubstructMatches(qmol)]))
     
     if not acidic_protons_idx:
-        logging.warning(f"Molecule doesn't contain matching protons with acidic_proton_loc {acidic_proton_loc} -> deprotonate returning original molecule")
+        logging.warning(f"Molecule doesn't contain matching  with acidic_proton_loc {acidic_proton_loc} -> deprotonate returning original molecule")
         return mol
      
     rwmol = Chem.RWMol(mol)

@@ -504,7 +504,7 @@ def main():
                             leaving_smarts_loc = variant_dict[suffix][0])
                 )
             if len(rdmolops.GetMolFrags(cc.rdkit_mol))>1:
-                logging.warning(f"Molecule breaks into fragments during the deleterious editing of {cc.resname} -> skipping the vaiant... ")
+                logging.warning(f"Molecule breaks into fragments during the deleterious editing of {cc.resname} -> skipping the variant... ")
                 continue
 
             cc = (

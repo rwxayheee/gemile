@@ -1,3 +1,6 @@
+import time
+start_time = time.time()
+
 import gemmi
 import json
 from pathlib import Path
@@ -12,7 +15,7 @@ logger = logging.getLogger('chemtempgen')
 logger.setLevel(logging.WARNING)
 handler = logging.StreamHandler(sys.stdout)
 
-"""Download modified_to_change_data.json"""
+# Download modified_to_change_data.json
 import urllib.request
 
 url = "https://rna.bgsu.edu/modified/modified_to_change_data.json"
@@ -122,8 +125,31 @@ for cc_name in mappable:
     variant_list = make_variants(file_path, cc_name)
     if variant_list:
         cc_byparent[cc_name] = variant_list
-        export_chem_templates_to_json(variant_list, f'{cc_name}_templates.json')
     else:
         cc_byparent[cc_name] = None
         logging.warning(f"No template generated for {cc_name}. ")
-        
+
+# Write to JSON
+write_to_single_json_fn = "NAKB_templates.json"
+residue_counter = 0
+variant_counter = 0
+
+if write_to_single_json_fn:
+    temp_list = [] 
+    for cc_name in cc_byparent:
+        if cc_byparent[cc_name] is not None:
+            temp_list += cc_byparent[cc_name]
+            residue_counter += 1
+            variant_counter += len(cc_byparent[cc_name])
+    export_chem_templates_to_json(temp_list, write_to_single_json_fn)
+else:
+    for cc_name in cc_byparent:
+        if cc_byparent[cc_name] is not None:
+            residue_counter += 1
+            variant_counter += len(cc_byparent[cc_name])
+            export_chem_templates_to_json(cc_byparent[cc_name], f"{cc_name}_templates.json")
+
+end_time = time.time()
+execution_time = end_time - start_time
+print(f"Generated {variant_counter} templates for {residue_counter} residues")
+print(f"Execution time: {execution_time} seconds")

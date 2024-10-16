@@ -458,5 +458,4 @@ if __name__ == '__main__':
     main()
 
 
-# XXX make embedding variants by PATTERNS not names, assign/check link_labels and update smiles/idx
 # XXX read from prepared? enumerate in stepwise? all protonation state variants, alter charge and update smiles/idx

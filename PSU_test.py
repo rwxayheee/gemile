@@ -5,7 +5,7 @@ basename = 'PSU'
 
 cc = ChemicalComponent.from_cif(source_cif, basename)
 cc.make_canonical()
-cc.make_embed_by_pattern({"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}})
+cc.make_embedded(leaving_names = {"HO3'"}, leaving_smarts_loc = {"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}})
 
 cc.build_recipe = {"O5'": ("HO5'", "H")}
 cc.make_extend()

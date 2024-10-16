@@ -1,0 +1,27 @@
+{
+    "ambiguous": {
+        "M7M": ["M7M", "M7M3", "M7M5p", "M7M5"]
+    },
+    "residue_templates": {
+        "M7M": {
+            "smiles": "[H]OC1([H])C([H])(N2C3=C(C(=O)N=C(N(C([H])([H])[H])C([H])([H])[H])N3[H])N(C([H])([H])[H])C2([H])[H])OC([H])(C([H])([H])OP(=O)[O-])C1([H])O.O=P([O-])[O-]",
+            "atom_name": ["HOCA", "OCA", "CBX", "HBX", "CBQ", "HBQ", "NBP", "CBO", "CBG", "CBF", "OBB", "NBE", "CBM", "NBV", "CBW", "HBW", "HBWA", "HBWB", "CBZ", "HBZ", "HBZA", "HBZB", "NBN", "HNBN", "NBH", "CBC", "HBC", "HBCA", "HBCB", "CBI", "HBI", "H23", "OBR", "CBS", "HBS", "CBT", "HBT", "HBTA", "OBU", "PBK", "OBL", "OBJ", "CBY", "HBY", "OCB", "OBA", "PAZ", "OAX", "OAY"],
+            "link_labels": {"44": "3-prime"}
+        },
+        "M7M3": {
+            "smiles": "[H]OC1([H])C([H])(N2C3=C(C(=O)N=C(N(C([H])([H])[H])C([H])([H])[H])N3[H])N(C([H])([H])[H])C2([H])[H])OC([H])(C([H])([H])OP(=O)[O-])C1([H])O[H].O=P([O-])[O-]",
+            "atom_name": ["HOCA", "OCA", "CBX", "HBX", "CBQ", "HBQ", "NBP", "CBO", "CBG", "CBF", "OBB", "NBE", "CBM", "NBV", "CBW", "HBW", "HBWA", "HBWB", "CBZ", "HBZ", "HBZA", "HBZB", "NBN", "HNBN", "NBH", "CBC", "HBC", "HBCA", "HBCB", "CBI", "HBI", "H23", "OBR", "CBS", "HBS", "CBT", "HBT", "HBTA", "OBU", "PBK", "OBL", "OBJ", "CBY", "HBY", "OCB", "HOCB", "OBA", "PAZ", "OAX", "OAY"],
+            "link_labels": {}
+        },
+        "M7M5p": {
+            "smiles": "[H]OC1([H])C([H])(N2C3=C(C(=O)N=C(N(C([H])([H])[H])C([H])([H])[H])N3[H])N(C([H])([H])[H])C2([H])[H])OC([H])(C([H])([H])OP(=O)([O-])OP(=O)([O-])[O-])C1([H])O",
+            "atom_name": ["HOCA", "OCA", "CBX", "HBX", "CBQ", "HBQ", "NBP", "CBO", "CBG", "CBF", "OBB", "NBE", "CBM", "NBV", "CBW", "HBW", "HBWA", "HBWB", "CBZ", "HBZ", "HBZA", "HBZB", "NBN", "HNBN", "NBH", "CBC", "HBC", "HBCA", "HBCB", "CBI", "HBI", "H23", "OBR", "CBS", "HBS", "CBT", "HBT", "HBTA", "OBU", "PBK", "OBL", "OBJ", "OBD", "PAZ", "OBA", "OAX", "OAY", "CBY", "HBY", "OCB"],
+            "link_labels": {"49": "3-prime"}
+        },
+        "M7M5": {
+            "smiles": "[H]OC([H])([H])C1([H])OC([H])(N2C3=C(C(=O)N=C(N(C([H])([H])[H])C([H])([H])[H])N3[H])N(C([H])([H])[H])C2([H])[H])C([H])(O[H])C1([H])O.O=P([O-])[O-]",
+            "atom_name": ["H24", "OBU", "CBT", "HBT", "HBTA", "CBS", "HBS", "OBR", "CBQ", "HBQ", "NBP", "CBO", "CBG", "CBF", "OBB", "NBE", "CBM", "NBV", "CBW", "HBW", "HBWA", "HBWB", "CBZ", "HBZ", "HBZA", "HBZB", "NBN", "HNBN", "NBH", "CBC", "HBC", "HBCA", "HBCB", "CBI", "HBI", "H23", "CBX", "HBX", "OCA", "HOCA", "CBY", "HBY", "OCB", "OBA", "PAZ", "OAX", "OAY"],
+            "link_labels": {"44": "5-prime", "42": "3-prime"}
+        }
+    }
+}

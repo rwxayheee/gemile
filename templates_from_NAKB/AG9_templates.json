@@ -1,0 +1,27 @@
+{
+    "ambiguous": {
+        "AG9": ["AG9", "AG93", "AG95p", "AG95"]
+    },
+    "residue_templates": {
+        "AG9": {
+            "smiles": "[H]OC1([H])C([H])(N2C(N([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])C([H])(N([H])[H])N([H])[H])=NC([H])(N([H])[H])C([H])=C2[H])OC([H])(C([H])([H])OP(=O)[O-])C1([H])O",
+            "atom_name": ["HO2'", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "N2", "HN2", "CA", "H1A", "H2A", "CB", "H1B", "H2B", "CG", "H1G", "H2G", "CD", "H1D", "H2D", "NE", "HNE", "CZ", "HZ", "NH1", "H1H1", "H2H1", "NH2", "H1H2", "H2H2", "N3", "C4", "H4", "N4", "H1N4", "H2N4", "C5", "H5", "C6", "H6", "O4'", "C4'", "H4'", "C5'", "H15'", "H25'", "O5'", "P", "OP1", "OP3", "C3'", "H3'", "O3'"],
+            "link_labels": {"49": "5-prime", "54": "3-prime"}
+        },
+        "AG93": {
+            "smiles": "[H]OC1([H])C([H])(N2C(N([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])C([H])(N([H])[H])N([H])[H])=NC([H])(N([H])[H])C([H])=C2[H])OC([H])(C([H])([H])OP(=O)[O-])C1([H])O[H]",
+            "atom_name": ["HO2'", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "N2", "HN2", "CA", "H1A", "H2A", "CB", "H1B", "H2B", "CG", "H1G", "H2G", "CD", "H1D", "H2D", "NE", "HNE", "CZ", "HZ", "NH1", "H1H1", "H2H1", "NH2", "H1H2", "H2H2", "N3", "C4", "H4", "N4", "H1N4", "H2N4", "C5", "H5", "C6", "H6", "O4'", "C4'", "H4'", "C5'", "H15'", "H25'", "O5'", "P", "OP1", "OP3", "C3'", "H3'", "O3'", "HO3'"],
+            "link_labels": {"49": "5-prime"}
+        },
+        "AG95p": {
+            "smiles": "[H]OC1([H])C([H])(N2C(N([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])C([H])(N([H])[H])N([H])[H])=NC([H])(N([H])[H])C([H])=C2[H])OC([H])(C([H])([H])OP(=O)([O-])[O-])C1([H])O",
+            "atom_name": ["HO2'", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "N2", "HN2", "CA", "H1A", "H2A", "CB", "H1B", "H2B", "CG", "H1G", "H2G", "CD", "H1D", "H2D", "NE", "HNE", "CZ", "HZ", "NH1", "H1H1", "H2H1", "NH2", "H1H2", "H2H2", "N3", "C4", "H4", "N4", "H1N4", "H2N4", "C5", "H5", "C6", "H6", "O4'", "C4'", "H4'", "C5'", "H15'", "H25'", "O5'", "P", "OP1", "OP2", "OP3", "C3'", "H3'", "O3'"],
+            "link_labels": {"55": "3-prime"}
+        },
+        "AG95": {
+            "smiles": "[H]OC([H])([H])C1([H])OC([H])(N2C(N([H])C([H])([H])C([H])([H])C([H])([H])C([H])([H])N([H])C([H])(N([H])[H])N([H])[H])=NC([H])(N([H])[H])C([H])=C2[H])C([H])(O[H])C1([H])O",
+            "atom_name": ["H7", "O5'", "C5'", "H15'", "H25'", "C4'", "H4'", "O4'", "C1'", "H1'", "N1", "C2", "N2", "HN2", "CA", "H1A", "H2A", "CB", "H1B", "H2B", "CG", "H1G", "H2G", "CD", "H1D", "H2D", "NE", "HNE", "CZ", "HZ", "NH1", "H1H1", "H2H1", "NH2", "H1H2", "H2H2", "N3", "C4", "H4", "N4", "H1N4", "H2N4", "C5", "H5", "C6", "H6", "C2'", "H2'", "O2'", "HO2'", "C3'", "H3'", "O3'"],
+            "link_labels": {"52": "3-prime"}
+        }
+    }
+}

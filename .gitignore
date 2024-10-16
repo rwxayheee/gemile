@@ -1,4 +1,4 @@
-components.cif
+*.cif
 modified_to_change_data.json
 
 *.DS_Store

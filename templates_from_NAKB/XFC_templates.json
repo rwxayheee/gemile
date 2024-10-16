@@ -1,0 +1,27 @@
+{
+    "ambiguous": {
+        "XFC": ["XFC", "XFC3", "XFC5p", "XFC5"]
+    },
+    "residue_templates": {
+        "XFC": {
+            "smiles": "[H]C(=O)C1=C([H])N(C2([H])OC([H])(C([H])([H])OP(=O)[O-])C([H])(O)C2([H])F)C(=O)N=C1N([H])[H]",
+            "atom_name": ["H9", "C5A", "O5A", "C5", "C6", "H8", "N1", "C1'", "H5", "O4'", "C4'", "H4", "C5'", "H2", "H3", "O5'", "P", "OP2", "O1", "C3'", "H10", "O3'", "C2'", "H11", "F2'", "C2", "O2", "N3", "C4", "N4", "H6", "H7"],
+            "link_labels": {"16": "5-prime", "21": "3-prime"}
+        },
+        "XFC3": {
+            "smiles": "[H]OC1([H])C([H])(F)C([H])(N2C(=O)N=C(N([H])[H])C(C([H])=O)=C2[H])OC1([H])C([H])([H])OP(=O)[O-]",
+            "atom_name": ["H12", "O3'", "C3'", "H10", "C2'", "H11", "F2'", "C1'", "H5", "N1", "C2", "O2", "N3", "C4", "N4", "H6", "H7", "C5", "C5A", "H9", "O5A", "C6", "H8", "O4'", "C4'", "H4", "C5'", "H2", "H3", "O5'", "P", "OP2", "O1"],
+            "link_labels": {"30": "5-prime"}
+        },
+        "XFC5p": {
+            "smiles": "[H]C(=O)C1=C([H])N(C2([H])OC([H])(C([H])([H])OP(=O)([O-])[O-])C([H])(O)C2([H])F)C(=O)N=C1N([H])[H]",
+            "atom_name": ["H9", "C5A", "O5A", "C5", "C6", "H8", "N1", "C1'", "H5", "O4'", "C4'", "H4", "C5'", "H2", "H3", "O5'", "P", "OP2", "OP1", "O1", "C3'", "H10", "O3'", "C2'", "H11", "F2'", "C2", "O2", "N3", "C4", "N4", "H6", "H7"],
+            "link_labels": {"22": "3-prime"}
+        },
+        "XFC5": {
+            "smiles": "[H]OC([H])([H])C1([H])OC([H])(N2C(=O)N=C(N([H])[H])C(C([H])=O)=C2[H])C([H])(F)C1([H])O",
+            "atom_name": ["H12", "O5'", "C5'", "H2", "H3", "C4'", "H4", "O4'", "C1'", "H5", "N1", "C2", "O2", "N3", "C4", "N4", "H6", "H7", "C5", "C5A", "H9", "O5A", "C6", "H8", "C2'", "H11", "F2'", "C3'", "H10", "O3'"],
+            "link_labels": {"29": "3-prime"}
+        }
+    }
+}

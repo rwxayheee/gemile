@@ -1,0 +1,27 @@
+{
+    "ambiguous": {
+        "UTP": ["UTP", "UTP3", "UTP5p", "UTP5"]
+    },
+    "residue_templates": {
+        "UTP": {
+            "smiles": "[H]OC1([H])C([H])(N2C(=O)N([H])C(=O)C([H])=C2[H])OC([H])(C([H])([H])OP(=O)OP(=O)([O-])OP(=O)([O-])[O-])C1([H])O",
+            "atom_name": ["HA", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "O2", "N3", "H3", "C4", "O4", "C5", "H5", "C6", "H6", "O4'", "C4'", "H4'", "C5'", "H5'1", "H5'2", "O5'", "PA", "O1A", "O3A", "PB", "O2B", "O1B", "O3B", "PG", "O2G", "O1G", "O3G", "C3'", "H3'", "O3'"],
+            "link_labels": {"24": "5-prime", "37": "3-prime"}
+        },
+        "UTP3": {
+            "smiles": "[H]OC1([H])C([H])(N2C(=O)N([H])C(=O)C([H])=C2[H])OC([H])(C([H])([H])OP(=O)OP(=O)([O-])OP(=O)([O-])[O-])C1([H])O[H]",
+            "atom_name": ["HA", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "O2", "N3", "H3", "C4", "O4", "C5", "H5", "C6", "H6", "O4'", "C4'", "H4'", "C5'", "H5'1", "H5'2", "O5'", "PA", "O1A", "O3A", "PB", "O2B", "O1B", "O3B", "PG", "O2G", "O1G", "O3G", "C3'", "H3'", "O3'", "HB"],
+            "link_labels": {"24": "5-prime"}
+        },
+        "UTP5p": {
+            "smiles": "[H]OC1([H])C([H])(N2C(=O)N([H])C(=O)C([H])=C2[H])OC([H])(C([H])([H])OP(=O)([O-])OP(=O)([O-])OP(=O)([O-])[O-])C1([H])O",
+            "atom_name": ["HA", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "O2", "N3", "H3", "C4", "O4", "C5", "H5", "C6", "H6", "O4'", "C4'", "H4'", "C5'", "H5'1", "H5'2", "O5'", "PA", "O1A", "O2A", "O3A", "PB", "O2B", "O1B", "O3B", "PG", "O2G", "O1G", "O3G", "C3'", "H3'", "O3'"],
+            "link_labels": {"38": "3-prime"}
+        },
+        "UTP5": {
+            "smiles": "[H]OC([H])([H])C1([H])OC([H])(N2C(=O)N([H])C(=O)C([H])=C2[H])C([H])(O[H])C1([H])O.O=P([O-])OP(=O)([O-])[O-]",
+            "atom_name": ["H7", "O5'", "C5'", "H5'1", "H5'2", "C4'", "H4'", "O4'", "C1'", "H1'", "N1", "C2", "O2", "N3", "H3", "C4", "O4", "C5", "H5", "C6", "H6", "C2'", "H2'", "O2'", "HA", "C3'", "H3'", "O3'", "O2B", "PB", "O1B", "O3B", "PG", "O2G", "O1G", "O3G"],
+            "link_labels": {"29": "5-prime", "27": "3-prime"}
+        }
+    }
+}

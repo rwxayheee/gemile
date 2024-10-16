@@ -8,6 +8,39 @@ logger = RDLogger.logger()
 logger.setLevel(RDLogger.CRITICAL)
 import logging
 
+# Constants from Meeko
+covalent_radius = {  # from wikipedia
+    1: 0.31,
+    5: 0.84,
+    6: 0.76,
+    7: 0.71,
+    8: 0.66,
+    9: 0.57,
+    12: 0.00,  # hack to avoid bonds with metals
+    14: 1.11,
+    15: 1.07,
+    16: 1.05,
+    17: 1.02,
+    # 19: 2.03,
+    20: 0.00,
+    # 24: 1.39,
+    25: 0.00,  # hack to avoid bonds with metals
+    26: 0.00,
+    30: 0.00,  # hack to avoid bonds with metals
+    # 34: 1.20,
+    35: 1.20,
+    53: 1.39,
+}
+list_of_AD_elements_as_AtomicNum = list(covalent_radius.keys())
+
+# Utility Functions
+def mol_contains_unexpected_element(mol: Chem.Mol, allowed_elements: list[str] = list_of_AD_elements_as_AtomicNum) -> bool:
+    """Check if rwmol contains unexpected elements"""
+    for atom in mol.GetAtoms():
+        if atom.GetAtomicNum() not in allowed_elements:
+            return True
+    return False
+
 
 def get_atom_idx_by_names(mol: Chem.Mol, wanted_names: set[str] = set()) -> set[int]:
     
@@ -51,7 +84,7 @@ def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str,
     
     return wanted_atoms_idx
 
-
+# Mol Editing Functions
 def embed(mol: Chem.Mol, allowed_smarts: str, 
           leaving_names: set[str] = None, leaving_smarts_loc: dict[str, set[int]] = None, 
           alsoHs: bool = True) -> Chem.Mol:
@@ -112,7 +145,10 @@ def cap(mol: Chem.Mol, allowed_smarts: str,
     def get_max_Hid(mol: Chem.Mol) -> int:
         all_Hids = [atom.GetProp('atom_id') for atom in mol.GetAtoms() if atom.GetAtomicNum()==1]
         regular_ids = [Hid for Hid in all_Hids if Hid[0]=='H' and Hid[1:].isdigit()]
-        return max(int(x[1:]) for x in regular_ids)
+        if len(regular_ids) > 0:
+            return max(int(x[1:]) for x in regular_ids)
+        else:
+            return 0
     
     rwmol = Chem.RWMol(mol)
     new_Hid = get_max_Hid(mol) + 1
@@ -160,7 +196,7 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int] = None) -> Chem.Mol:
     rwmol.UpdatePropertyCache()
     return rwmol.GetMol()
 
-
+# Output Formatters
 def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
     """Generate SMILES with atom names in the order of SMILES output."""
     # allHsExplicit may expose the implicit Hs of linker atoms to Smiles; the implicit Hs don't have names
@@ -224,6 +260,7 @@ class ChemicalComponent:
     
     @classmethod
     # requires gemmi
+
     def from_cif(cls, source_cif: str, resname: str):
         """Create ChemicalComponent from a chemical component dict file and a searchable residue name in file."""
         
@@ -259,6 +296,11 @@ class ChemicalComponent:
                 rdkit_atom.SetFormalCharge(int(target_charge)) # this needs to be int for rdkit
             rwmol.AddAtom(rdkit_atom)
 
+        # Check if rwmol contains unexpected elements
+        if mol_contains_unexpected_element(rwmol):
+            logging.warning(f"Molecule contains unexpected elements -> template for {resname} will be None. ")
+            return None
+
         # Map atom_id (atom names) with rdkit idx
         name_to_idx_mapping = {atom.GetProp('atom_id'): idx for (idx, atom) in enumerate(rwmol.GetAtoms())}
 
@@ -285,8 +327,13 @@ class ChemicalComponent:
                           name_to_idx_mapping[bond_cols['atom_id_2'][bond_i].strip('"')], 
                           bond_type_mapping.get(bond_type, Chem.BondType.UNSPECIFIED))
 
-        # Finish eidting mol    
-        rwmol.UpdatePropertyCache()
+        # Finish eidting mol 
+        try:    
+            rwmol.UpdatePropertyCache()
+        except Exception as e:
+            logging.error(f"Failed to create rdkitmol from cif. Error: {e} -> template for {resname} will be None. ")
+            return None
+        
         rdkit_mol = rwmol.GetMol()
             
         # Get Smiles with explicit Hs and ordered atom names
@@ -350,6 +397,7 @@ class ChemicalComponent:
 
         return self
 
+# Writer Function
 def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str):
     """Export list of chem templates to json"""
 
@@ -395,6 +443,7 @@ def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: 
     print(f"{json_fname} <-- Json File for New Chemical Templates")
 
 
+# Example
 def main(): 
 
     # """Download components.cif"""
@@ -404,9 +453,19 @@ def main():
     #    print(f"Unable to download components.cif from files.wwpdb.org")
     #    sys.exit(2)
 
-    """Make chemical templates"""
+    """Download components.cif"""
+    import urllib.request
 
-    source_cif = 'components.cif'
+    url = "https://files.wwpdb.org/pub/pdb/data/monomers/components.cif"
+    source_cif = file_path = "components.cif"
+
+    try:
+        urllib.request.urlretrieve(url, file_path)
+        logging.info(f"File downloaded successfully: {file_path}")
+    except Exception as e:
+        logging.error(f"Failed to download file. Error: {e}")
+
+    """Make chemical templates"""
     basenames = ['A', 'U', 'C', 'G', 'DA', 'DT', 'DC', 'DG']
     NA_ccs = []
 
@@ -450,7 +509,7 @@ def main():
             print(f"*** finish making {cc.resname} ***")
             NA_ccs.append(cc)
 
-    """Export to json files"""
+    """Export to one json file"""
     export_chem_templates_to_json(NA_ccs, 'NA_residue_templates.json')
 
 

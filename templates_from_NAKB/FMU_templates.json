@@ -1,0 +1,27 @@
+{
+    "ambiguous": {
+        "FMU": ["FMU", "FMU3", "FMU5p", "FMU5"]
+    },
+    "residue_templates": {
+        "FMU": {
+            "smiles": "[H]OC1([H])C([H])(N2C(=O)N([H])C(=O)C(F)(C([H])([H])[H])C2([H])[H])OC([H])(C([H])([H])OP(=O)[O-])C1([H])O",
+            "atom_name": ["HA", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "O2", "N3", "H3", "C4", "O4", "C5", "F", "C5M", "H5M1", "H5M2", "H5M3", "C6", "H6C1", "H6C2", "O4'", "C4'", "H4'", "C5'", "H5'1", "H5'2", "O5'", "P", "O2P", "O3P", "C3'", "H3'", "O3'"],
+            "link_labels": {"29": "5-prime", "34": "3-prime"}
+        },
+        "FMU3": {
+            "smiles": "[H]OC1([H])C([H])(N2C(=O)N([H])C(=O)C(F)(C([H])([H])[H])C2([H])[H])OC([H])(C([H])([H])OP(=O)[O-])C1([H])O[H]",
+            "atom_name": ["HA", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "O2", "N3", "H3", "C4", "O4", "C5", "F", "C5M", "H5M1", "H5M2", "H5M3", "C6", "H6C1", "H6C2", "O4'", "C4'", "H4'", "C5'", "H5'1", "H5'2", "O5'", "P", "O2P", "O3P", "C3'", "H3'", "O3'", "HB"],
+            "link_labels": {"29": "5-prime"}
+        },
+        "FMU5p": {
+            "smiles": "[H]OC1([H])C([H])(N2C(=O)N([H])C(=O)C(F)(C([H])([H])[H])C2([H])[H])OC([H])(C([H])([H])OP(=O)([O-])[O-])C1([H])O",
+            "atom_name": ["HA", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "O2", "N3", "H3", "C4", "O4", "C5", "F", "C5M", "H5M1", "H5M2", "H5M3", "C6", "H6C1", "H6C2", "O4'", "C4'", "H4'", "C5'", "H5'1", "H5'2", "O5'", "P", "O2P", "O1P", "O3P", "C3'", "H3'", "O3'"],
+            "link_labels": {"35": "3-prime"}
+        },
+        "FMU5": {
+            "smiles": "[H]OC([H])([H])C1([H])OC([H])(N2C(=O)N([H])C(=O)C(F)(C([H])([H])[H])C2([H])[H])C([H])(O[H])C1([H])O",
+            "atom_name": ["H4", "O5'", "C5'", "H5'1", "H5'2", "C4'", "H4'", "O4'", "C1'", "H1'", "N1", "C2", "O2", "N3", "H3", "C4", "O4", "C5", "F", "C5M", "H5M1", "H5M2", "H5M3", "C6", "H6C1", "H6C2", "C2'", "H2'", "O2'", "HA", "C3'", "H3'", "O3'"],
+            "link_labels": {"32": "3-prime"}
+        }
+    }
+}

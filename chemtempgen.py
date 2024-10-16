@@ -1,5 +1,6 @@
 import gemmi
 import json
+from pathlib import Path
 
 from rdkit import Chem
 from rdkit import RDLogger
@@ -13,17 +14,17 @@ def get_atom_idx_by_names(mol: Chem.Mol, wanted_names: set[str] = set()) -> set[
     if not wanted_names:
         return set()
     
-    wanted_atoms_by_names = set(atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in wanted_names)
+    wanted_atoms_by_names = {atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in wanted_names}
     names_not_found = wanted_names.difference({atom.GetProp('atom_id') for atom in wanted_atoms_by_names})
     if names_not_found: 
         logging.warning(f"Molecule doesn't contain the requested atoms with names: {names_not_found} -> continue with found names... ")
-    return set(atom.GetIdx() for atom in wanted_atoms_by_names)
+    return {atom.GetIdx() for atom in wanted_atoms_by_names}
 
 
 def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str, 
-                             wanted_smarts_loc: dict[str, set[int]] = {}) -> set[int]:
+                             wanted_smarts_loc: dict[str, set[int]] = None) -> set[int]:
     
-    if not wanted_smarts_loc:
+    if wanted_smarts_loc is None:
         return set()
     
     wanted_atoms_idx = set()
@@ -44,7 +45,7 @@ def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str,
                 continue
             for match_copy in match_wanted:
                 match_in_copy = [idx for idx in match_copy if match_copy.index(idx) in wanted_smarts_loc[wanted_smarts]]
-                match_wanted_atoms = set(mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed)
+                match_wanted_atoms = {mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed}
                 if match_wanted_atoms: 
                     wanted_atoms_idx.update(atom.GetIdx() for atom in match_wanted_atoms)
     
@@ -52,7 +53,7 @@ def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str,
 
 
 def embed(mol: Chem.Mol, allowed_smarts: str, 
-          leaving_names: set[str] = set(), leaving_smarts_loc: dict[str, set[int]] = {}, 
+          leaving_names: set[str] = None, leaving_smarts_loc: dict[str, set[int]] = None, 
           alsoHs: bool = True) -> Chem.Mol:
     """
     Remove atoms from the molecule based the union of
@@ -60,7 +61,7 @@ def embed(mol: Chem.Mol, allowed_smarts: str,
     (b) leaving_smarts_loc: dict to map substructure SMARTS patterns with 
     tuple of 0-based indicies for atoms to delete (restricted by allowed_smarts)
     """
-    if not leaving_names and not leaving_smarts_loc:
+    if leaving_names is None and leaving_smarts_loc is None:
         return mol
 
     leaving_atoms_idx = set()
@@ -87,13 +88,13 @@ def embed(mol: Chem.Mol, allowed_smarts: str,
 
 
 def cap(mol: Chem.Mol, allowed_smarts: str, 
-        capping_names: set[str] = set(), capping_smarts_loc: dict[str, set[int]] = {}) -> Chem.Mol:
+        capping_names: set[str] = None, capping_smarts_loc: dict[str, set[int]] = None) -> Chem.Mol:
     """Add hydrogens to atoms with implicit hydrogens based on the union of
     (a) capping_names: list of atom IDs (names), and
     (b) capping_smarts_loc: dict to map substructure SMARTS patterns with 
     tuple of 0-based indicies for atoms."""
    
-    if not capping_names and not capping_smarts_loc:
+    if capping_names is None and capping_smarts_loc is None:
         return mol
     
     capping_atoms_idx = set()
@@ -129,11 +130,14 @@ def cap(mol: Chem.Mol, allowed_smarts: str,
     return rwmol.GetMol()
 
 
-def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
+def deprotonate(mol, acidic_proton_loc: dict[str, int] = None) -> Chem.Mol:
     """Remove acidic protons from the molecule based on acidic_proton_loc"""
     # acidic_proton_loc is a mapping 
     # keys: smarts pattern of a fragment
     # value: the index (order in smarts) of the leaving proton
+
+    if acidic_proton_loc is None:
+        return mol
 
     # deprotonate all matched protons
     acidic_protons_idx = set()
@@ -296,13 +300,13 @@ class ChemicalComponent:
         self.rdkit_mol = deprotonate(self.rdkit_mol, acidic_proton_loc = acidic_proton_loc)
         return self
 
-    def make_embedded(self, allowed_smarts, leaving_names = {}, leaving_smarts_loc = {}):
+    def make_embedded(self, allowed_smarts, leaving_names = None, leaving_smarts_loc = None):
         """Remove leaving atoms from the molecule by atom names and/or patterns."""
         self.rdkit_mol = embed(self.rdkit_mol, allowed_smarts = allowed_smarts, 
                                leaving_names = leaving_names, leaving_smarts_loc = leaving_smarts_loc)
         return self
         
-    def make_capped(self, allowed_smarts, capping_names = {}, capping_smarts_loc = {}):
+    def make_capped(self, allowed_smarts, capping_names = None, capping_smarts_loc = None):
         """Build and name explicit hydrogens for atoms with implicit Hs by atom names and/or patterns."""
         self.rdkit_mol = cap(self.rdkit_mol, allowed_smarts = allowed_smarts, 
                              capping_names = capping_names, capping_smarts_loc = capping_smarts_loc)
@@ -323,9 +327,9 @@ class ChemicalComponent:
             atom_idx = get_atom_idx_by_patterns(self.rdkit_mol, allowed_smarts = Chem.MolToSmarts(self.rdkit_mol), 
                                                 wanted_smarts_loc = {pattern: {0}})
             if not atom_idx:
-                logging.warning(f"Molecule doesn't contain pattern: {pattern} -> no linker label will be added. ")
+                logging.warning(f"Molecule doesn't contain pattern: {pattern} -> linker label for {pattern_to_label_mapping[pattern]} will not be made. ")
             elif len(atom_idx) > 1:
-                logging.warning(f"Molecule contain multiple copies of pattern: {pattern} -> no linker label will be added. ")
+                logging.warning(f"Molecule contain multiple copies of pattern: {pattern} -> linker label for {pattern_to_label_mapping[pattern]} will not be made. ")
             else:
                 atom_idx = next(iter(atom_idx))
                 name = self.rdkit_mol.GetAtomWithIdx(atom_idx).GetProp('atom_id')
@@ -386,7 +390,7 @@ def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: 
             single_line_link_labels = json.dumps(cc.link_labels, separators=(', ', ': '))
             json_str = json_str.replace(json.dumps(data_to_export["residue_templates"][cc.resname]["link_labels"], indent = 4), single_line_link_labels)
 
-    with open(json_fname, 'w') as f:
+    with open(Path(json_fname), 'w') as f:
         f.write(json_str)
     print(f"{json_fname} <-- Json File for New Chemical Templates")
 
@@ -420,9 +424,9 @@ def main():
     pattern_to_label_mapping_standard = {'[PX4h1]': '5-prime', '[O+0X2h1:1]': '3-prime'}
 
     variant_dict = {
-        "":  ({"[O][PX4](=O)([O])[OX2][CX4]": {0} ,"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {}), # embedded nucleotide 
-        "3": ({"[O][PX4](=O)([O])[OX2][CX4]": {0}}, {}), # 3' end nucleotide 
-        "5p": ({"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {}), # 5' end nucleotide (extra phosphate than canonical X5)
+        "":  ({"[O][PX4](=O)([O])[OX2][CX4]": {0} ,"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), # embedded nucleotide 
+        "3": ({"[O][PX4](=O)([O])[OX2][CX4]": {0}}, None), # 3' end nucleotide 
+        "5p": ({"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), # 5' end nucleotide (extra phosphate than canonical X5)
         "5": ({"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}}), # 5' end nucleoside (canonical X5 in Amber)
     }
 

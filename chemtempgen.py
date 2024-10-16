@@ -160,19 +160,19 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int]) -> Chem.Mol:
     # value: the index (order in smarts) of the leaving proton
 
     # deprotonate all matched protons
-    acidic_protons = []
+    acidic_protons_idx = set()
     for smarts_pattern, idx in acidic_proton_loc.items():
         qmol = Chem.MolFromSmarts(smarts_pattern)
-        acidic_protons.extend([mol.GetAtomWithIdx(match[idx]) for match in mol.GetSubstructMatches(qmol)])
+        acidic_protons_idx.update(set([match[idx] for match in mol.GetSubstructMatches(qmol)]))
     
-    if not acidic_protons:
-        logging.warning("Molecule doesn't contain matching atoms with acidic_proton_loc, deprotonate returning original molecule")
+    if not acidic_protons_idx:
+        logging.warning(f"Molecule doesn't contain matching protons with acidic_proton_loc {acidic_proton_loc} -> deprotonate returning original molecule")
         return mol
      
     rwmol = Chem.RWMol(mol)
-    for atom in sorted(acidic_protons, key=lambda atom: atom.GetIdx(), reverse=True):
-        rwmol.RemoveAtom(atom.GetIdx())
-        neighbors = atom.GetNeighbors()
+    for atom_idx in sorted(acidic_protons_idx, reverse=True):
+        rwmol.RemoveAtom(atom_idx)
+        neighbors = mol.GetAtomWithIdx(atom_idx).GetNeighbors()
         if neighbors:
             neighbor_atom = rwmol.GetAtomWithIdx(neighbors[0].GetIdx())
             neighbor_atom.SetFormalCharge(neighbor_atom.GetFormalCharge() - 1)

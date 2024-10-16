@@ -1,6 +1,6 @@
 {
     "ambiguous": {
-        "CTP": ["CTP", "CTP3", "CTP5p", "CTP5"]
+        "CTP": ["CTP", "CTP3", "CTP5p"]
     },
     "residue_templates": {
         "CTP": {
@@ -17,11 +17,6 @@
             "smiles": "[H]OC1([H])C([H])(N2C(=O)N=C(N([H])[H])C([H])=C2[H])OC([H])(C([H])([H])OP(=O)([O-])OP(=O)([O-])OP(=O)([O-])[O-])C1([H])O",
             "atom_name": ["HO2'", "O2'", "C2'", "H2'", "C1'", "H1'", "N1", "C2", "O2", "N3", "C4", "N4", "HN41", "HN42", "C5", "H5", "C6", "H6", "O4'", "C4'", "H4'", "C5'", "H5'1", "H5'2", "O5'", "PA", "O1A", "O2A", "O3A", "PB", "O1B", "O2B", "O3B", "PG", "O1G", "O2G", "O3G", "C3'", "H3'", "O3'"],
             "link_labels": {"39": "3-prime"}
-        },
-        "CTP5": {
-            "smiles": "[H]OC([H])([H])C1([H])OC([H])(N2C(=O)N=C(N([H])[H])C([H])=C2[H])C([H])(O[H])C1([H])O.O=P([O-])OP(=O)([O-])[O-]",
-            "atom_name": ["H7", "O5'", "C5'", "H5'1", "H5'2", "C4'", "H4'", "O4'", "C1'", "H1'", "N1", "C2", "O2", "N3", "C4", "N4", "HN41", "HN42", "C5", "H5", "C6", "H6", "C2'", "H2'", "O2'", "HO2'", "C3'", "H3'", "O3'", "O1B", "PB", "O2B", "O3B", "PG", "O1G", "O2G", "O3G"],
-            "link_labels": {"30": "5-prime", "28": "3-prime"}
         }
     }
 }

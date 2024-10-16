@@ -2,6 +2,7 @@ import gemmi
 import json
 from pathlib import Path
 from rdkit import Chem
+from rdkit.Chem import rdmolops
 
 from rdkit import RDLogger
 logger = RDLogger.logger()
@@ -84,7 +85,14 @@ def make_variants(source_cif: str, basename: str) -> list[ChemicalComponent]:
             cc
             .make_canonical(acidic_proton_loc = acidic_proton_loc_canonical) 
             .make_embedded(allowed_smarts = embed_allowed_smarts, 
-                           leaving_smarts_loc = variant_dict[suffix][0]) 
+                           leaving_smarts_loc = variant_dict[suffix][0])
+            )
+        if len(rdmolops.GetMolFrags(cc.rdkit_mol))>1:
+            logging.warning(f"Molecule breaks into fragments during the deleterious editing of {cc.resname} -> skipping the vaiant... ")
+            continue
+
+        cc = (
+            cc
             .make_capped(allowed_smarts = cap_allowed_smarts, 
                          capping_smarts_loc = variant_dict[suffix][1]) 
             .make_pretty_smiles()

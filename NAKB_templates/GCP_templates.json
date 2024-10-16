@@ -1,27 +1,12 @@
 {
     "ambiguous": {
-        "GCP": ["GCP", "GCP3", "GCP5p", "GCP5"]
+        "GCP": ["GCP5p"]
     },
     "residue_templates": {
-        "GCP": {
-            "smiles": "[H]C([H])(P(=O)[O-])P(=O)([O-])[O-].[H]OC1([H])C([H])(N2C([H])=NC3=C2N=C(N([H])[H])N([H])C3=O)OC([H])(C([H])([H])OP(=O)[O-])C1([H])O",
-            "atom_name": ["H3B1", "C3B", "H3B2", "PB", "O1B", "O2B", "PG", "O1G", "O2G", "O3G", "HO2'", "O2'", "C2'", "H2'", "C1'", "H1'", "N9", "C8", "H8", "N7", "C5", "C4", "N3", "C2", "N2", "HN21", "HN22", "N1", "HN1", "C6", "O6", "O4'", "C4'", "H4'", "C5'", "H5'2", "H5'1", "O5'", "PA", "O1A", "O2A", "C3'", "H3'", "O3'"],
-            "link_labels": {"43": "3-prime"}
-        },
-        "GCP3": {
-            "smiles": "[H]C([H])(P(=O)[O-])P(=O)([O-])[O-].[H]OC1([H])C([H])(N2C([H])=NC3=C2N=C(N([H])[H])N([H])C3=O)OC([H])(C([H])([H])OP(=O)[O-])C1([H])O[H]",
-            "atom_name": ["H3B1", "C3B", "H3B2", "PB", "O1B", "O2B", "PG", "O1G", "O2G", "O3G", "HO2'", "O2'", "C2'", "H2'", "C1'", "H1'", "N9", "C8", "H8", "N7", "C5", "C4", "N3", "C2", "N2", "HN21", "HN22", "N1", "HN1", "C6", "O6", "O4'", "C4'", "H4'", "C5'", "H5'2", "H5'1", "O5'", "PA", "O1A", "O2A", "C3'", "H3'", "O3'", "HO3'"],
-            "link_labels": {}
-        },
         "GCP5p": {
             "smiles": "[H]OC1([H])C([H])(N2C([H])=NC3=C2N=C(N([H])[H])N([H])C3=O)OC([H])(C([H])([H])OP(=O)([O-])OP(=O)([O-])C([H])([H])P(=O)([O-])[O-])C1([H])O",
             "atom_name": ["HO2'", "O2'", "C2'", "H2'", "C1'", "H1'", "N9", "C8", "H8", "N7", "C5", "C4", "N3", "C2", "N2", "HN21", "HN22", "N1", "HN1", "C6", "O6", "O4'", "C4'", "H4'", "C5'", "H5'2", "H5'1", "O5'", "PA", "O1A", "O2A", "O3A", "PB", "O1B", "O2B", "C3B", "H3B1", "H3B2", "PG", "O1G", "O2G", "O3G", "C3'", "H3'", "O3'"],
             "link_labels": {"44": "3-prime"}
-        },
-        "GCP5": {
-            "smiles": "[H]C([H])(P(=O)[O-])P(=O)([O-])[O-].[H]OC([H])([H])C1([H])OC([H])(N2C([H])=NC3=C2N=C(N([H])[H])N([H])C3=O)C([H])(O[H])C1([H])O",
-            "atom_name": ["H3B1", "C3B", "H3B2", "PB", "O1B", "O2B", "PG", "O1G", "O2G", "O3G", "H9", "O5'", "C5'", "H5'2", "H5'1", "C4'", "H4'", "O4'", "C1'", "H1'", "N9", "C8", "H8", "N7", "C5", "C4", "N3", "C2", "N2", "HN21", "HN22", "N1", "HN1", "C6", "O6", "C2'", "H2'", "O2'", "HO2'", "C3'", "H3'", "O3'"],
-            "link_labels": {"3": "5-prime", "41": "3-prime"}
         }
     }
 }

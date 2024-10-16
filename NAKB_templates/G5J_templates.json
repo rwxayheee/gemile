@@ -1,6 +1,6 @@
 {
     "ambiguous": {
-        "G5J": ["G5J", "G5J3", "G5J5p", "G5J5"]
+        "G5J": ["G5J", "G5J3", "G5J5p"]
     },
     "residue_templates": {
         "G5J": {
@@ -17,11 +17,6 @@
             "smiles": "[H]OC1([H])C([H])(N2C([H])=NC3=C2N([H])C(N([H])[H])=NC3=O)OC([H])(C([H])([H])OP(=O)([O-])OP(=O)([O-])OP(=O)([O-])OC([H])([H])[H])C1([H])O",
             "atom_name": ["H3", "O2'", "C2'", "H6", "C1'", "H5", "N9", "C8", "H14", "N7", "C5", "C4", "N3", "H15", "C2", "N2", "H1", "H2", "N1", "C6", "O6", "O4'", "C4'", "H11", "C5'", "H12", "H13", "O5'", "PA", "O2A", "O1A", "O3A", "PB", "O2B", "O1B", "O3B", "PG", "O1G", "O2G", "O3G", "C3G", "H8", "H9", "H10", "C3'", "H7", "O3'"],
             "link_labels": {"46": "3-prime"}
-        },
-        "G5J5": {
-            "smiles": "[H]C([H])([H])OP(=O)([O-])OP(=O)[O-].[H]OC([H])([H])C1([H])OC([H])(N2C([H])=NC3=C2N([H])C(N([H])[H])=NC3=O)C([H])(O[H])C1([H])O",
-            "atom_name": ["H8", "C3G", "H9", "H10", "O3G", "PG", "O1G", "O2G", "O3B", "PB", "O2B", "O1B", "H16", "O5'", "C5'", "H12", "H13", "C4'", "H11", "O4'", "C1'", "H5", "N9", "C8", "H14", "N7", "C5", "C4", "N3", "H15", "C2", "N2", "H1", "H2", "N1", "C6", "O6", "C2'", "H6", "O2'", "H3", "C3'", "H7", "O3'"],
-            "link_labels": {"9": "5-prime", "43": "3-prime"}
         }
     }
 }

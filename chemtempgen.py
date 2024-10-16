@@ -8,8 +8,54 @@ logger.setLevel(RDLogger.CRITICAL)
 import logging
 
 
-def embed(mol: Chem.Mol, leaving_names: set[str] = {}, leaving_smarts_loc: dict[str, set[int]] = {}, 
-          alsoHs = True, allowed_smarts = "[O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]") -> Chem.Mol:
+def get_atom_idx_by_names(mol: Chem.Mol, wanted_names: set[str] = {}) -> set[int]:
+    
+    if not wanted_names:
+        return set()
+    
+    wanted_atoms_by_names = set([atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in wanted_names])
+    names_not_found = wanted_names.difference(set([atom.GetProp('atom_id') for atom in wanted_atoms_by_names]))
+    if names_not_found: 
+        logging.warning(f"Molecule doesn't contain the requested atoms with names: {names_not_found} -> continue with found names... ")
+    return set([atom.GetIdx() for atom in wanted_atoms_by_names])
+
+
+def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str, 
+                             wanted_smarts_loc: dict[str, set[int]] = {}) -> set[int]:
+    
+    if not wanted_smarts_loc:
+        return set()
+    
+    wanted_atoms_idx = set()
+    
+    tmol = Chem.MolFromSmarts(allowed_smarts)
+    match_allowed = mol.GetSubstructMatches(tmol)
+    if not match_allowed:
+        logging.warning(f"Molecule doesn't contain allowed_smarts: {allowed_smarts} -> no pattern-based action will be made. ")
+    elif len(match_allowed) > 1:
+        logging.warning(f"Molecule contain multiple copies of allowed_smarts: {allowed_smarts} -> no pattern-based action will be made. ")
+    else:
+        match_allowed = match_allowed[0]
+        for wanted_smarts in wanted_smarts_loc: 
+            lmol = Chem.MolFromSmarts(wanted_smarts)
+            match_wanted = mol.GetSubstructMatches(lmol)
+            if not match_wanted:
+                logging.warning(f"Molecule doesn't contain wanted_smarts: {wanted_smarts} -> continue with next pattern... ")
+                continue
+            for match_copy in match_wanted:
+                match_in_copy = [idx for idx in match_copy if match_copy.index(idx) in wanted_smarts_loc[wanted_smarts]]
+                print(match_copy, match_in_copy)
+                match_wanted_atoms = set([mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed])
+                if match_wanted_atoms: 
+                    print([atom.GetProp("atom_id") for atom in match_wanted_atoms])
+                    wanted_atoms_idx.update([atom.GetIdx() for atom in match_wanted_atoms])
+    
+    return wanted_atoms_idx
+
+
+def embed(mol: Chem.Mol, allowed_smarts: str, 
+          leaving_names: set[str] = {}, leaving_smarts_loc: dict[str, set[int]] = {}, 
+          alsoHs = True) -> Chem.Mol:
     """
     Remove atoms from the molecule based the union of
     (a) leaving_names: list of atom IDs (leaving_name), and
@@ -22,38 +68,14 @@ def embed(mol: Chem.Mol, leaving_names: set[str] = {}, leaving_smarts_loc: dict[
     leaving_atoms_idx = set()
 
     if leaving_names:
-        leaving_atoms_by_names = set([atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in leaving_names])
-        names_not_found = leaving_names.difference(set([atom.GetProp('atom_id') for atom in leaving_atoms_by_names]))
-        if names_not_found: 
-            logging.warning(f"Molecule doesn't contain the requested atoms with names: {names_not_found} -> continue with found names... ")
-        leaving_atoms_idx.update([atom.GetIdx() for atom in leaving_atoms_by_names])
+        leaving_atoms_idx.update(get_atom_idx_by_names(mol, leaving_names))
 
     if leaving_smarts_loc:
-        tmol = Chem.MolFromSmarts(allowed_smarts)
-        match_allowed = mol.GetSubstructMatches(tmol)
-        if not match_allowed:
-            logging.warning(f"Molecule doesn't contain allowed_smarts: {allowed_smarts} -> no pattern-based deletion will be made. ")
-        elif len(match_allowed) > 1:
-            logging.warning(f"Molecule contain multiple copies of allowed_smarts: {allowed_smarts} -> no pattern-based deletion will be made. ")
-        else:
-            match_allowed = match_allowed[0]
-            for leaving_smarts in leaving_smarts_loc: 
-                lmol = Chem.MolFromSmarts(leaving_smarts)
-                match_leaving = mol.GetSubstructMatches(lmol)
-                if not match_leaving:
-                    logging.warning(f"Molecule doesn't contain leaving_smarts: {leaving_smarts} -> continue with next pattern... ")
-                    continue
-                for match_copy in match_leaving:
-                    match_in_copy = [idx for idx in match_copy if match_copy.index(idx) in leaving_smarts_loc[leaving_smarts]]
-                    print(match_copy, match_in_copy)
-                    match_leaving_atoms = set([mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed])
-                    if match_leaving_atoms: 
-                        print([atom.GetProp("atom_id") for atom in match_leaving_atoms])
-                        leaving_atoms_idx.update([atom.GetIdx() for atom in match_leaving_atoms])
+        leaving_atoms_idx.update(get_atom_idx_by_patterns(mol, allowed_smarts, leaving_smarts_loc))
 
     if leaving_atoms_idx and alsoHs:
         leaving_Hs = [ne for atom_idx in leaving_atoms_idx for ne in mol.GetAtomWithIdx(atom_idx).GetNeighbors() if ne.GetAtomicNum() == 1]
-        leaving_atoms_idx.update([atom.GetIdx() for atom in leaving_Hs])
+        leaving_atoms_idx.update(set([atom.GetIdx() for atom in leaving_Hs]))
 
     if not leaving_atoms_idx:
         logging.warning(f"No matched atoms to delete -> returning original mol...")
@@ -70,6 +92,44 @@ def extend(mol: Chem.Mol, recipe: dict[str, tuple[str, str]]) -> Chem.Mol:
     """Add single atom to single atom by a single bond based a given build recipe."""
    
     if not recipe: 
+        return mol
+    
+    rwmol = Chem.RWMol(mol)
+    for build in recipe:
+        new_atom_name, new_element = recipe[build]
+        open_atoms = [atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in build]
+
+        for open_atom in open_atoms: 
+            print(f"building new atom {new_atom_name} ({new_element}) at {build}...")
+            new_atom = Chem.Atom(new_element)
+            new_atom.SetProp('atom_id', new_atom_name)
+            new_idx = rwmol.AddAtom(new_atom)
+            rwmol.AddBond(open_atom.GetIdx(), new_idx, Chem.BondType.SINGLE)
+
+    rwmol.UpdatePropertyCache()
+    return rwmol.GetMol()
+
+
+def cap(mol: Chem.Mol, allowed_smarts: str, 
+        capping_names: set[str] = {}, capping_smarts_loc: dict[str, set[int]] = {}) -> Chem.Mol:
+    """Add single hydrogen to atoms with implicit hydrogens based on the union of
+    (a) capping_names: list of atom IDs (leaving_name), and
+    (b) capping_smarts_loc: dict to map substructure SMARTS patterns with 
+    tuple of 0-based indicies for atoms."""
+   
+    if not capping_names and not capping_smarts_loc:
+        return mol
+    
+    capping_atoms_idx = set()
+    
+    if capping_names:
+        capping_atoms_idx.update(get_atom_idx_by_names(mol, capping_names))
+
+    if capping_smarts_loc:
+        capping_atoms_idx.update(get_atom_idx_by_patterns(mol, allowed_smarts, capping_smarts_loc))
+
+    if not capping_atoms_idx:
+        logging.warning(f"No matched atoms to cap -> returning original mol...")
         return mol
     
     rwmol = Chem.RWMol(mol)
@@ -255,9 +315,10 @@ class ChemicalComponent:
         """Deprotonate acidic groups til the canonical (most deprotonated) state."""
         self.rdkit_mol = deprotonate(self.rdkit_mol, acidic_proton_loc = {'[H][O][PX4](=O)([O])[OX2]': 0})
 
-    def make_embedded(self, leaving_names, leaving_smarts_loc):
+    def make_embedded(self, allowed_smarts, leaving_names, leaving_smarts_loc):
         """Remove leaving atoms from the molecule by atom names and/or patterns."""
-        self.rdkit_mol = embed(self.rdkit_mol, leaving_names = leaving_names, leaving_smarts_loc = leaving_smarts_loc)
+        self.rdkit_mol = embed(self.rdkit_mol, allowed_smarts = allowed_smarts, 
+                               leaving_names = leaving_names, leaving_smarts_loc = leaving_smarts_loc)
 
     def make_extend(self):
         """Build extra atoms in the molecule."""

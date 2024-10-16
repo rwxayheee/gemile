@@ -338,13 +338,12 @@ class ChemicalComponent:
         if not name_to_label_mapping:
             return self
 
-        link_labbels = {}
         for atom in self.rdkit_mol.GetAtoms():
             if atom.GetProp('atom_id') in name_to_label_mapping:
                 if atom.GetNumImplicitHs() > 0:
                     name = atom.GetProp('atom_id')
-                    link_labbels[str(self.atom_name.index(name))] = name_to_label_mapping[name]
-        self.link_labels = link_labbels
+                    self.link_labels.update({str(self.atom_name.index(name)): name_to_label_mapping[name]})
+
         return self
 
 def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str):
@@ -407,40 +406,47 @@ def main():
     basenames = ['A', 'U', 'C', 'G', 'DA', 'DT', 'DC', 'DG']
     NA_ccs = []
 
+    acidic_proton_loc_canonical = {
+        # any carboxylic acid, sulfuric/sulfonic acid/ester, phosphoric/phosphinic acid/ester
+        '[H][O]['+atom+'](=O)': 0 for atom in ('CX3', 'SX4', 'SX3', 'PX4', 'PX3')
+    } | {
+        # any thio carboxylic/sulfuric acid
+        '[H][O]['+atom+'](=S)': 0 for atom in ('CX3', 'SX4')
+    } | {
+        '[H][SX2][a]': 0, # thiophenol
+    } 
+    embed_allowed_smarts = "[O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]"
+    cap_allowed_smarts = "[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]"
+    pattern_to_label_mapping_standard = {'[PX4h1]': '5-prime', '[O+0X2h1:1]': '3-prime'}
+
     variant_dict = {
-        # "_": ({}, {}), # free nucleotide monophosphate
-        "":  ({'OP3', "HO3'"}, {}), # embedded nucleotide 
-        "3": ({'OP3'}, {}), # 3' end nucleotide 
-        "5p": ({"HO3'"}, {}), # 5' end nucleotide (extra phosphate than canonical X5)
-        # "N": ({'OP3', 'HOP3', 'OP2', 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # free nucleoside 
-        "5": ({'OP3', 'OP2', "HO3'", 'OP1', 'P'}, {"O5'": ("HO5'", "H")}), # 5' end nucleoside (canonical X5 in Amber)
-        }
+        "":  ({"[O][PX4](=O)([O])[OX2][CX4]": {0} ,"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {}), # embedded nucleotide 
+        "3": ({"[O][PX4](=O)([O])[OX2][CX4]": {0}}, {}), # 3' end nucleotide 
+        "5p": ({"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {}), # 5' end nucleotide (extra phosphate than canonical X5)
+        "5": ({"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}}), # 5' end nucleoside (canonical X5 in Amber)
+    }
 
     for basename in basenames:
         for suffix in variant_dict:
             cc = ChemicalComponent.from_cif(source_cif, basename)
             cc.resname += suffix
-            print(f"using CCD residue {basename} to construct {cc.resname}")
+            print(f"*** using CCD residue {basename} to construct {cc.resname} ***")
 
-            cc.leaving_name, cc.build_recipe = variant_dict[suffix]
-
-            print(f"setting leaving atoms to {cc.leaving_name}")
-
-            cc.make_canonical()
-            cc.make_embedded()
-            cc.make_extend()
-            cc.smiles_exh, cc.atom_name = get_smiles_with_atom_names(cc.rdkit_mol)
-
-            cc.smiles_exh = make_pretty_smiles(cc.smiles_exh)
-            cc.make_link_labels_from_names()
-            print(f"setting link labels to {cc.link_labels}")
-            cc.parent = basename
+            cc = (
+                cc
+                .make_canonical(acidic_proton_loc = acidic_proton_loc_canonical) 
+                .make_embedded(allowed_smarts = embed_allowed_smarts, 
+                            leaving_smarts_loc = variant_dict[suffix][0]) 
+                .make_capped(allowed_smarts = cap_allowed_smarts, 
+                            capping_smarts_loc = variant_dict[suffix][1]) 
+                .make_pretty_smiles()
+                .make_link_labels_from_patterns(pattern_to_label_mapping = pattern_to_label_mapping_standard)
+            )
 
             print(f"*** finish making {cc.resname} ***")
             NA_ccs.append(cc)
 
     """Export to json files"""
-
     export_chem_templates_to_json(NA_ccs, 'NA_residue_templates.json')
 
 

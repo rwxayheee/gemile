@@ -6,7 +6,8 @@ from rdkit import Chem
 from rdkit import RDLogger
 logger = RDLogger.logger()
 logger.setLevel(RDLogger.CRITICAL)
-import logging
+import sys, logging
+logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
 # Constants from Meeko
 covalent_radius = {  # from wikipedia

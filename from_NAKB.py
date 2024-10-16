@@ -1,13 +1,15 @@
 import gemmi
 import json
 from pathlib import Path
-
 from rdkit import Chem
+
 from rdkit import RDLogger
 logger = RDLogger.logger()
 logger.setLevel(RDLogger.CRITICAL)
-import logging
-
+import sys, logging, chemtempgen
+logger = logging.getLogger('chemtempgen')
+logger.setLevel(logging.WARNING)
+handler = logging.StreamHandler(sys.stdout)
 
 """Download modified_to_change_data.json"""
 import urllib.request

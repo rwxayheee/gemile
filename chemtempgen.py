@@ -519,7 +519,7 @@ def main():
             NA_ccs.append(cc)
 
     """Export to one json file"""
-    export_chem_templates_to_json(NA_ccs, 'NA_residue_templates.json')
+    export_chem_templates_to_json(NA_ccs, 'standard_NA_templates.json')
 
 
 if __name__ == '__main__':

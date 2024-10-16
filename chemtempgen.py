@@ -295,20 +295,25 @@ class ChemicalComponent:
     def make_canonical(self, acidic_proton_loc):
         """Deprotonate acidic groups til the canonical (most deprotonated) state."""
         self.rdkit_mol = deprotonate(self.rdkit_mol, acidic_proton_loc = acidic_proton_loc)
+        return self
 
     def make_embedded(self, allowed_smarts, leaving_names = {}, leaving_smarts_loc = {}):
         """Remove leaving atoms from the molecule by atom names and/or patterns."""
         self.rdkit_mol = embed(self.rdkit_mol, allowed_smarts = allowed_smarts, 
                                leaving_names = leaving_names, leaving_smarts_loc = leaving_smarts_loc)
+        return self
         
     def make_capped(self, allowed_smarts, capping_names = {}, capping_smarts_loc = {}):
         """Build and name explicit hydrogens for atoms with implicit Hs by atom names and/or patterns."""
         self.rdkit_mol = cap(self.rdkit_mol, allowed_smarts = allowed_smarts, 
-                             capping_names = capping_names, capping_smarts_loc = capping_smarts_loc) 
+                             capping_names = capping_names, capping_smarts_loc = capping_smarts_loc)
+        return self
         
     def make_pretty_smiles(self):
         """Build and name explicit hydrogens for atoms with implicit Hs by atom names and/or patterns."""
+        self.smiles_exh, self.atom_name = get_smiles_with_atom_names(self.rdkit_mol)
         self.smiles_exh = get_pretty_smiles(self.smiles_exh)
+        return self
 
     def make_link_labels_from_names(self, name_to_label_mapping = {'P': '5-prime', "O3'": '3-prime'}):
         """Map atom names to link labels based on a given mapping."""
@@ -319,6 +324,7 @@ class ChemicalComponent:
                     name = atom.GetProp('atom_id')
                     link_labbels[str(self.atom_name.index(name))] = name_to_label_mapping[name]
         self.link_labels = link_labbels
+        return self
 
 
 def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str):

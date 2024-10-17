@@ -6269,7 +6269,20 @@ WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-pri
 *** finish making OFC5 ***
 WARNING:root:Molecule doesn't contain embed_allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no templates will be made. 
 WARNING:root:No template generated for OGX. 
-ERROR:root:Failed to download file for OIQ. Error: <urlopen error [Errno 60] Operation timed out>
+*** using CCD residue OIQ to construct OIQ ***
+*** finish making OIQ ***
+*** using CCD residue OIQ to construct OIQ3 ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
+*** finish making OIQ3 ***
+*** using CCD residue OIQ to construct OIQ5p ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
+*** finish making OIQ5p ***
+*** using CCD residue OIQ to construct OIQ5 ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
+*** finish making OIQ5 ***
 WARNING:root:Molecule doesn't contain embed_allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no templates will be made. 
 WARNING:root:No template generated for OKT. 
 *** using CCD residue ONE to construct ONE ***
@@ -7049,5 +7062,5 @@ WARNING:root:No template generated for ZHP.
 ERROR:root:Failed to create rdkitmol from cif. Error: Explicit valence for atom # 48 O, 3, is greater than permitted -> template for ZIV will be None. 
 WARNING:root:No template generated for ZIV. 
 NAKB_templates.json <-- Json File for New Chemical Templates
-Generated 1779 templates for 457 residues
-Execution time: 302.7318890094757 seconds
+Generated 1783 templates for 458 residues
+Execution time: 220.30776596069336 seconds

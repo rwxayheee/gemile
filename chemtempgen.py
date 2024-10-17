@@ -526,15 +526,19 @@ def main():
     cap_allowed_smarts = "[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]"
     pattern_to_label_mapping_standard = {'[PX4h1]': '5-prime', '[O+0X2h1]': '3-prime'}
 
-    variant_dict = {
-        "":  ({"[O][PX4](=O)([O])[OX2][CX4]": {0} ,"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), # embedded nucleotide 
-        "3": ({"[O][PX4](=O)([O])[OX2][CX4]": {0}}, None), # 3' end nucleotide 
-        "5p": ({"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), # 5' end nucleotide (extra phosphate than canonical X5)
-        "5": ({"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}}), # 5' end nucleoside (canonical X5 in Amber)
+    variant_recipe = {
+        # embedded nucleotide 
+        "":  ({"[O][PX4](=O)([O])[OX2][CX4]": {0} ,"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), 
+        # 3' end nucleotide 
+        "3": ({"[O][PX4](=O)([O])[OX2][CX4]": {0}}, None), 
+        # 5' end nucleotide (extra phosphate than canonical X5)
+        "5p": ({"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), 
+        # 5' end nucleoside (canonical X5 in Amber)
+        "5": ({"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}}), 
     }
 
     for basename in basenames:
-        for suffix in variant_dict:
+        for suffix in variant_recipe:
             cc = ChemicalComponent.from_cif(source_cif, basename)
             cc.resname += suffix
             print(f"*** using CCD residue {basename} to construct {cc.resname} ***")
@@ -543,9 +547,9 @@ def main():
                 cc
                 .make_canonical(acidic_proton_loc = acidic_proton_loc_canonical)
                 .make_embedded(allowed_smarts = embed_allowed_smarts, 
-                               leaving_smarts_loc = variant_dict[suffix][0])
+                               leaving_smarts_loc = variant_recipe[suffix][0])
                 .make_capped(allowed_smarts = cap_allowed_smarts, 
-                             capping_smarts_loc = variant_dict[suffix][1]) 
+                             capping_smarts_loc = variant_recipe[suffix][1]) 
                 .make_pretty_smiles()
                 .make_link_labels_from_patterns(pattern_to_label_mapping = pattern_to_label_mapping_standard)
                 )

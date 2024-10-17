@@ -71,14 +71,13 @@ variant_dict = {
 def make_variants(source_cif: str, basename: str) -> list[ChemicalComponent]: 
 
     cc_from_cif = ChemicalComponent.from_cif(source_cif, basename)
-
     if cc_from_cif is None:
-        return 
+        return None
 
     editable = cc_from_cif.rdkit_mol.GetSubstructMatches(Chem.MolFromSmarts(embed_allowed_smarts))
     if not editable:
         logging.warning(f"Molecule doesn't contain embed_allowed_smarts: {embed_allowed_smarts} -> no templates will be made. ")
-        return 
+        return None
 
     cc_variants = []
     for suffix in variant_dict:

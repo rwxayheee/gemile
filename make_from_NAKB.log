@@ -2617,10 +2617,48 @@ WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-pri
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 *** finish making PRN5 ***
-ERROR:root:Failed to download file for TCY. Error: <urlopen error [Errno 60] Operation timed out>
-ERROR:root:Failed to download file for TSP. Error: <urlopen error [Errno 60] Operation timed out>
-ERROR:root:Failed to download file for UTP. Error: <urlopen error [Errno 60] Operation timed out>
-ERROR:root:Failed to download file for WVQ. Error: <urlopen error [Errno 60] Operation timed out>
+*** using CCD residue TCY to construct TCY ***
+*** finish making TCY ***
+*** using CCD residue TCY to construct TCY3 ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
+*** finish making TCY3 ***
+*** using CCD residue TCY to construct TCY5p ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
+*** finish making TCY5p ***
+*** using CCD residue TCY to construct TCY5 ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
+*** finish making TCY5 ***
+WARNING:root:Molecule doesn't contain embed_allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no templates will be made. 
+WARNING:root:No template generated for TSP. 
+*** using CCD residue UTP to construct UTP ***
+*** finish making UTP ***
+*** using CCD residue UTP to construct UTP3 ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
+*** finish making UTP3 ***
+*** using CCD residue UTP to construct UTP5p ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
+*** finish making UTP5p ***
+*** using CCD residue UTP to construct UTP5 ***
+WARNING:root:Molecule breaks into fragments during the deleterious editing of UTP5 -> skipping the vaiant... 
+*** using CCD residue WVQ to construct WVQ ***
+*** finish making WVQ ***
+*** using CCD residue WVQ to construct WVQ3 ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
+*** finish making WVQ3 ***
+*** using CCD residue WVQ to construct WVQ5p ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
+*** finish making WVQ5p ***
+*** using CCD residue WVQ to construct WVQ5 ***
+WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
+WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
+*** finish making WVQ5 ***
 *** using CCD residue 0A to construct 0A ***
 *** finish making 0A ***
 *** using CCD residue 0A to construct 0A3 ***
@@ -6231,20 +6269,7 @@ WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-pri
 *** finish making OFC5 ***
 WARNING:root:Molecule doesn't contain embed_allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no templates will be made. 
 WARNING:root:No template generated for OGX. 
-*** using CCD residue OIQ to construct OIQ ***
-*** finish making OIQ ***
-*** using CCD residue OIQ to construct OIQ3 ***
-WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
-WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making OIQ3 ***
-*** using CCD residue OIQ to construct OIQ5p ***
-WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
-WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-*** finish making OIQ5p ***
-*** using CCD residue OIQ to construct OIQ5 ***
-WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
-WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-*** finish making OIQ5 ***
+ERROR:root:Failed to download file for OIQ. Error: <urlopen error [Errno 60] Operation timed out>
 WARNING:root:Molecule doesn't contain embed_allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no templates will be made. 
 WARNING:root:No template generated for OKT. 
 *** using CCD residue ONE to construct ONE ***
@@ -7024,5 +7049,5 @@ WARNING:root:No template generated for ZHP.
 ERROR:root:Failed to create rdkitmol from cif. Error: Explicit valence for atom # 48 O, 3, is greater than permitted -> template for ZIV will be None. 
 WARNING:root:No template generated for ZIV. 
 NAKB_templates.json <-- Json File for New Chemical Templates
-Generated 1772 templates for 455 residues
-Execution time: 168.31804895401 seconds
+Generated 1779 templates for 457 residues
+Execution time: 302.7318890094757 seconds

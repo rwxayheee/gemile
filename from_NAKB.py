@@ -46,6 +46,7 @@ mappable = {key: value for key, value in data.items() if filter_key not in value
 from chemtempgen import * 
 import copy
 
+# Constants & Configuration
 acidic_proton_loc_canonical = {
         # any carboxylic acid, sulfuric/sulfonic acid/ester, phosphoric/phosphinic acid/ester
         '[H][O]['+atom+'](=O)': 0 for atom in ('CX3', 'SX4', 'SX3', 'PX4', 'PX3')
@@ -66,6 +67,7 @@ variant_dict = {
         "5": ({"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}}), # 5' end nucleoside (canonical X5 in Amber)
     }
 
+# Single Make Process
 def make_variants(source_cif: str, basename: str) -> list[ChemicalComponent]: 
 
     cc_from_cif = ChemicalComponent.from_cif(source_cif, basename)
@@ -102,14 +104,25 @@ def make_variants(source_cif: str, basename: str) -> list[ChemicalComponent]:
             .make_link_labels_from_patterns(pattern_to_label_mapping = pattern_to_label_mapping_standard)
             )
 
+        # Try Meeko check
+        try:
+            cc.meeko_check()
+        except Exception as e:
+            logging.error(f"Template Failed to pass Meeko check. Error: {e}")
+            continue
+        
+        # Check redundancy
+        if any(cc == other_variant for other_variant in cc_variants):
+            logging.error(f"Template Failed to pass redundancy check -> skipping the template... ")
+            continue
+
         cc_variants.append(cc)
         print(f"*** finish making {cc.resname} ***")
-    
+
     return cc_variants
 
-
+# Run Make Process
 cc_byparent = {}
-
 for cc_name in mappable: 
 
     url = f"https://files.rcsb.org/ligands/download/{cc_name}.cif"

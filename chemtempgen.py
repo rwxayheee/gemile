@@ -10,6 +10,7 @@ logger.setLevel(RDLogger.CRITICAL)
 import sys, logging
 logging.basicConfig(stream=sys.stdout, level=logging.WARNING)
 
+
 # Constants from Meeko
 covalent_radius = {  # from wikipedia
     1: 0.31,
@@ -35,6 +36,7 @@ covalent_radius = {  # from wikipedia
 }
 list_of_AD_elements_as_AtomicNum = list(covalent_radius.keys())
 
+
 # Utility Functions
 def mol_contains_unexpected_element(mol: Chem.Mol, allowed_elements: list[str] = list_of_AD_elements_as_AtomicNum) -> bool:
     """Check if rwmol contains unexpected elements"""
@@ -57,7 +59,8 @@ def get_atom_idx_by_names(mol: Chem.Mol, wanted_names: set[str] = set()) -> set[
 
 
 def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str, 
-                             wanted_smarts_loc: dict[str, set[int]] = None) -> set[int]:
+                             wanted_smarts_loc: dict[str, set[int]] = None,
+                             allow_multiple: bool=False) -> set[int]:
     
     if wanted_smarts_loc is None:
         return set()
@@ -68,23 +71,29 @@ def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str,
     match_allowed = mol.GetSubstructMatches(tmol)
     if not match_allowed:
         logging.warning(f"Molecule doesn't contain allowed_smarts: {allowed_smarts} -> no pattern-based action will be made. ")
-    elif len(match_allowed) > 1:
+        return set()
+    if len(match_allowed) > 1 and not allow_multiple: 
         logging.warning(f"Molecule contain multiple copies of allowed_smarts: {allowed_smarts} -> no pattern-based action will be made. ")
+        return set()
+    if len(match_allowed) > 1 and allow_multiple:
+        match_allowed = set(item for sublist in match_allowed for item in sublist)
     else:
         match_allowed = match_allowed[0]
-        for wanted_smarts in wanted_smarts_loc: 
-            lmol = Chem.MolFromSmarts(wanted_smarts)
-            match_wanted = mol.GetSubstructMatches(lmol)
-            if not match_wanted:
-                logging.warning(f"Molecule doesn't contain wanted_smarts: {wanted_smarts} -> continue with next pattern... ")
-                continue
-            for match_copy in match_wanted:
-                match_in_copy = [idx for idx in match_copy if match_copy.index(idx) in wanted_smarts_loc[wanted_smarts]]
-                match_wanted_atoms = {mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed}
-                if match_wanted_atoms: 
-                    wanted_atoms_idx.update(atom.GetIdx() for atom in match_wanted_atoms)
+    
+    for wanted_smarts in wanted_smarts_loc: 
+        lmol = Chem.MolFromSmarts(wanted_smarts)
+        match_wanted = mol.GetSubstructMatches(lmol)
+        if not match_wanted:
+            logging.warning(f"Molecule doesn't contain wanted_smarts: {wanted_smarts} -> continue with next pattern... ")
+            continue
+        for match_copy in match_wanted:
+            match_in_copy = [idx for idx in match_copy if match_copy.index(idx) in wanted_smarts_loc[wanted_smarts]]
+            match_wanted_atoms = {mol.GetAtomWithIdx(idx) for idx in match_in_copy if idx in match_allowed}
+            if match_wanted_atoms: 
+                wanted_atoms_idx.update(atom.GetIdx() for atom in match_wanted_atoms)
     
     return wanted_atoms_idx
+
 
 # Mol Editing Functions
 def embed(mol: Chem.Mol, allowed_smarts: str, 
@@ -112,7 +121,7 @@ def embed(mol: Chem.Mol, allowed_smarts: str,
         leaving_atoms_idx.update(atom.GetIdx() for atom in leaving_Hs)
 
     if not leaving_atoms_idx:
-        logging.warning(f"No matched atoms to delete -> returning original mol...")
+        logging.warning(f"No matched atoms to delete -> embed returning original mol...")
         return mol
     
     rwmol = Chem.RWMol(mol)
@@ -138,10 +147,10 @@ def cap(mol: Chem.Mol, allowed_smarts: str,
         capping_atoms_idx.update(get_atom_idx_by_names(mol, capping_names))
 
     if capping_smarts_loc:
-        capping_atoms_idx.update(get_atom_idx_by_patterns(mol, allowed_smarts, capping_smarts_loc))
+        capping_atoms_idx.update(get_atom_idx_by_patterns(mol, allowed_smarts, capping_smarts_loc, allow_multiple = True))
 
     if not capping_atoms_idx:
-        logging.warning(f"No matched atoms to cap -> returning original mol...")
+        logging.warning(f"No matched atoms to cap -> cap returning original mol...")
         return mol
     
     def get_max_Hid(mol: Chem.Mol) -> int:
@@ -184,7 +193,7 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int] = None) -> Chem.Mol:
         acidic_protons_idx.update(match[idx] for match in mol.GetSubstructMatches(qmol))
     
     if not acidic_protons_idx:
-        logging.warning(f"Molecule doesn't contain matching  with acidic_proton_loc {acidic_proton_loc} -> deprotonate returning original molecule")
+        logging.warning(f"Molecule doesn't contain matching  with acidic_proton_loc {acidic_proton_loc} -> deprotonate returning original mol... ")
         return mol
      
     rwmol = Chem.RWMol(mol)
@@ -197,6 +206,7 @@ def deprotonate(mol, acidic_proton_loc: dict[str, int] = None) -> Chem.Mol:
     
     rwmol.UpdatePropertyCache()
     return rwmol.GetMol()
+
 
 # Output Formatters
 def get_smiles_with_atom_names(mol: Chem.Mol) -> tuple[str, list[str]]:
@@ -259,6 +269,11 @@ class ChemicalComponent:
         self.smiles_exh = smiles_exh
         self.atom_name = atom_name
         self.link_labels = {} # default to empty dict (free molecular form)
+
+    def __eq__(self, other):
+        if isinstance(other, ChemicalComponent):
+            return self.smiles_exh == other.smiles_exh and self.atom_name == other.atom_name
+        return False
     
     @classmethod
     # requires gemmi
@@ -336,6 +351,12 @@ class ChemicalComponent:
             logging.error(f"Failed to create rdkitmol from cif. Error: {e} -> template for {resname} will be None. ")
             return None
         
+        # Check implicit Hs
+        total_implicit_hydrogens = sum(atom.GetNumImplicitHs() for atom in rwmol.GetAtoms())
+        if total_implicit_hydrogens > 0:
+            logging.error(f"rdkitmol from cif has implicit hydrogens. -> template for {resname} will be None. ")
+            return None
+
         rdkit_mol = rwmol.GetMol()
             
         # Get Smiles with explicit Hs and ordered atom names
@@ -398,6 +419,27 @@ class ChemicalComponent:
                     self.link_labels.update({str(self.atom_name.index(name)): name_to_label_mapping[name]})
 
         return self
+    
+    def meeko_check(self):
+        smiles, link_labels, atom_names = [self.smiles_exh, self.link_labels, self.atom_name]
+        ps = Chem.SmilesParserParams()
+        ps.removeHs = False
+        mol = Chem.MolFromSmiles(smiles, ps)
+            
+        have_implicit_hs = set()
+        for atom in mol.GetAtoms():
+            if atom.GetNumImplicitHs() > 0:
+                have_implicit_hs.add(atom.GetIdx())
+        if set(int(atom_idx) for atom_idx in link_labels) != have_implicit_hs:
+            raise ValueError(
+                f"expected any atom with non-real Hs ({have_implicit_hs}) to be in {link_labels=}"
+            )
+        if atom_names is None:
+            return
+        if len(atom_names) != mol.GetNumAtoms():
+            raise ValueError(f"{len(atom_names)=} differs from {mol.GetNumAtoms()=}")
+        return
+
 
 # Writer Function
 def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str):
@@ -482,7 +524,7 @@ def main():
     } 
     embed_allowed_smarts = "[O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]"
     cap_allowed_smarts = "[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]"
-    pattern_to_label_mapping_standard = {'[PX4h1]': '5-prime', '[O+0X2h1:1]': '3-prime'}
+    pattern_to_label_mapping_standard = {'[PX4h1]': '5-prime', '[O+0X2h1]': '3-prime'}
 
     variant_dict = {
         "":  ({"[O][PX4](=O)([O])[OX2][CX4]": {0} ,"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), # embedded nucleotide 
@@ -499,7 +541,7 @@ def main():
 
             cc = (
                 cc
-                .make_canonical(acidic_proton_loc = acidic_proton_loc_canonical) 
+                .make_canonical(acidic_proton_loc = acidic_proton_loc_canonical)
                 .make_embedded(allowed_smarts = embed_allowed_smarts, 
                             leaving_smarts_loc = variant_dict[suffix][0])
                 )

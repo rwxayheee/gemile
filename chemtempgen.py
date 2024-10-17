@@ -1,6 +1,11 @@
 import gemmi
 import json
 from pathlib import Path
+import copy
+import urllib.request
+import time
+import tempfile
+
 from rdkit import Chem
 from rdkit.Chem import rdmolops
 
@@ -274,10 +279,8 @@ class ChemicalComponent:
         if isinstance(other, ChemicalComponent):
             return self.smiles_exh == other.smiles_exh and self.atom_name == other.atom_name
         return False
-    
-    @classmethod
-    # requires gemmi
 
+    @classmethod
     def from_cif(cls, source_cif: str, resname: str):
         """Create ChemicalComponent from a chemical component dict file and a searchable residue name in file."""
         
@@ -441,8 +444,8 @@ class ChemicalComponent:
         return
 
 
-# Writer Function
-def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str):
+# Export/Writer Function
+def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: str=""):
     """Export list of chem templates to json"""
 
     basenames = []
@@ -453,7 +456,7 @@ def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: 
     for cc in cc_list:
         ambiguous_dict[cc.parent].append(cc.resname)
 
-    data_to_export = {"ambiguous": {basename:basename+'.resnames' for basename in basenames}}
+    data_to_export = {"ambiguous": {}}
 
     residue_templates = {}
     for cc in cc_list:
@@ -467,11 +470,12 @@ def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: 
             residue_templates[cc.resname]["link_labels"] = {}
 
     data_to_export.update({"residue_templates": residue_templates})
+
     json_str = json.dumps(data_to_export, indent = 4)
 
     # format ambiguous resnames to one line
-    for basename in ambiguous_dict:
-        single_line_resnames = json.dumps(ambiguous_dict[basename], separators=(', ', ': '))
+    for basename in data_to_export["ambiguous"]:
+        single_line_resnames = json.dumps(data_to_export["ambiguous"][basename], separators=(', ', ': '))
         json_str = json_str.replace(json.dumps(data_to_export["ambiguous"][basename], indent = 4), single_line_resnames)
 
     # format link_labels and atom_name to one line
@@ -482,9 +486,80 @@ def export_chem_templates_to_json(cc_list: list[ChemicalComponent], json_fname: 
             single_line_link_labels = json.dumps(cc.link_labels, separators=(', ', ': '))
             json_str = json_str.replace(json.dumps(data_to_export["residue_templates"][cc.resname]["link_labels"], indent = 4), single_line_link_labels)
 
-    with open(Path(json_fname), 'w') as f:
-        f.write(json_str)
-    print(f"{json_fname} <-- Json File for New Chemical Templates")
+    if json_fname:
+        with open(Path(json_fname), 'w') as f:
+            f.write(json_str)
+        print(f"{json_fname} <-- Json File for New Chemical Templates")
+    else:
+        print(json_str)
+        return json_str
+
+
+def fetch_from_pdb(resname: str, max_retries = 5, backoff_factor = 2) -> str: 
+    url = f"https://files.rcsb.org/ligands/download/{resname}.cif"
+    file_path = f"{resname}.cif"
+    for retry in range(max_retries):
+        try:
+            with urllib.request.urlopen(url) as response:
+                content = response.read()
+            logging.info(f"File downloaded successfully: {file_path}")
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".cif") as temp_file:
+                temp_file.write(content)
+                return temp_file.name 
+            
+        except Exception as e:
+            if retry < max_retries - 1: 
+                wait_time = backoff_factor ** retry  
+                logging.info(f"Download failed for {resname}. Error: {e}. Retrying in {wait_time} seconds...")
+                time.sleep(wait_time)
+            else:
+                logging.error(f"Max retries reached. Could not download CIF file for {resname}. Error: {e}")
+                return None
+
+
+class ChemTempCreationError(Exception):
+    def __init__(self, message):
+        super().__init__(message)
+
+# Constants
+acidic_proton_loc_canonical = {
+        # any carboxylic acid, sulfuric/sulfonic acid/ester, phosphoric/phosphinic acid/ester
+        '[H][O]['+atom+'](=O)': 0 for atom in ('CX3', 'SX4', 'SX3', 'PX4', 'PX3')
+    } | {
+        # any thio carboxylic/sulfuric acid
+        '[H][O]['+atom+'](=S)': 0 for atom in ('CX3', 'SX4')
+    } | {
+        '[H][SX2][a]': 0, # thiophenol
+    }
+
+# Make free (noncovalent) CC
+def make_noncovalent(basename: str) -> list[ChemicalComponent]: 
+
+    cc_from_cif = ChemicalComponent.from_cif(fetch_from_pdb(basename), basename)
+    if cc_from_cif is None:
+        return None
+
+    cc = copy.deepcopy(cc_from_cif)
+    logger.info(f"*** using CCD residue {basename} to construct {cc.resname} ***")
+
+    cc = cc.make_canonical(acidic_proton_loc = acidic_proton_loc_canonical)
+    if len(rdmolops.GetMolFrags(cc.rdkit_mol))>1:
+        err = f"Template Generation failed for {cc.resname}. Error: Molecule breaks into fragments during the deleterious editing. "
+        logging.error(err)
+        raise ChemTempCreationError(err)
+
+    cc = cc.make_pretty_smiles()
+
+    # Try Meeko check
+    try:
+        cc.meeko_check()
+    except Exception as e:
+        err = f"Template {cc.resname} Failed to pass Meeko check. Error: {e}"
+        logging.error(err)
+        raise ChemTempCreationError(err)
+        
+    logger.info(f"*** finish making {cc.resname} ***")
+    return cc
 
 
 # Example

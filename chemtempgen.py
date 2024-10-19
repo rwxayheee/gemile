@@ -457,11 +457,11 @@ class ChemicalComponent:
         if self.link_labels: 
             int_labels = {int(atom_id) for atom_id in self.link_labels}
         else:
-            int_labels = {}
+            int_labels = set()
 
         if int_labels != have_implicit_hs:
             raise ValueError(
-                f"expected any atom with non-real Hs ({have_implicit_hs}) to be in {self.link_labels=}"
+                f"expected any atom with non-real Hs ({have_implicit_hs}) to tagged in link_labels ({int_labels})"
             )
         
         if not self.atom_name: 

@@ -103,11 +103,13 @@ def make_variants(basename: str) -> list[ChemicalComponent]:
             .make_link_labels_from_patterns(pattern_to_label_mapping = pattern_to_label_mapping_standard)
             )
 
-        # Try Meeko check
+        # Check
         try:
             cc.ResidueTemplate_check()
         except Exception as e:
-            logging.error(f"Template Failed to pass Meeko check. Error: {e}")
+            err = f"Template {cc.resname} Failed to pass ResidueTemplate check. Error: {e}"
+            # raise ChemTempCreationError(err)
+            logging.error(err)
             continue
         
         # Check redundancy

@@ -558,13 +558,13 @@ WARNING:root:No template generated for 2DA.
 *** using CCD residue TTD to construct TTD ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({1, 37}) to be in self.link_labels={'37': '3-prime'}
+ERROR:root:Template TTD Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({1, 37}) to be in self.link_labels={'37': '3-prime'}
 *** using CCD residue TTD to construct TTD3 ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making TTD3 ***
+ERROR:root:Template TTD3 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({39}) to be in self.link_labels={}
 *** using CCD residue TTD to construct TTD5p ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
@@ -574,7 +574,7 @@ WARNING:root:Molecule doesn't contain allowed_smarts: [OX2][CX4][CX4]1[OX2][CX4]
 WARNING:root:No matched atoms to cap -> cap returning original mol...
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({1, 34, 29}) to be in self.link_labels={'34': '3-prime'}
+ERROR:root:Template TTD5 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({1, 34, 29}) to be in self.link_labels={'34': '3-prime'}
 *** using CCD residue ORP to construct ORP ***
 *** finish making ORP ***
 *** using CCD residue ORP to construct ORP3 ***
@@ -1927,7 +1927,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making GTG ***
+ERROR:root:Template GTG Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GTG to construct GTG3 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -1935,7 +1935,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GTG3 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GTG to construct GTG5p ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -1943,7 +1943,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GTG5p Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GTG to construct GTG5 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -1953,7 +1953,8 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GTG5 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
+WARNING:root:No template generated for GTG. 
 *** using CCD residue IU to construct IU ***
 *** finish making IU ***
 *** using CCD residue IU to construct IU3 ***
@@ -2278,7 +2279,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making RIA ***
+ERROR:root:Template RIA Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue RIA to construct RIA3 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -2286,7 +2287,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template RIA3 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue RIA to construct RIA5p ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -2294,7 +2295,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template RIA5p Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue RIA to construct RIA5 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -2304,19 +2305,20 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template RIA5 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
+WARNING:root:No template generated for RIA. 
 WARNING:root:Molecule contains unexpected elements -> template for T5S will be None. 
 WARNING:root:No template generated for T5S. 
 *** using CCD residue T64 to construct T64 ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({27, 52}) to be in self.link_labels={'52': '3-prime'}
+ERROR:root:Template T64 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({27, 52}) to be in self.link_labels={'52': '3-prime'}
 *** using CCD residue T64 to construct T643 ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making T643 ***
+ERROR:root:Template T643 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({30}) to be in self.link_labels={}
 *** using CCD residue T64 to construct T645p ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
@@ -2326,7 +2328,7 @@ WARNING:root:Molecule doesn't contain allowed_smarts: [OX2][CX4][CX4]1[OX2][CX4]
 WARNING:root:No matched atoms to cap -> cap returning original mol...
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({49, 27, 44}) to be in self.link_labels={'49': '3-prime'}
+ERROR:root:Template T645 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({49, 27, 44}) to be in self.link_labels={'49': '3-prime'}
 WARNING:root:Molecule doesn't contain embed_allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no templates will be made. 
 WARNING:root:No template generated for TT. 
 *** using CCD residue UAR to construct UAR ***
@@ -2548,7 +2550,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making GTA ***
+ERROR:root:Template GTA Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GTA to construct GTA3 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -2556,7 +2558,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GTA3 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GTA to construct GTA5p ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -2564,7 +2566,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GTA5p Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GTA to construct GTA5 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -2574,7 +2576,8 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GTA5 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
+WARNING:root:No template generated for GTA. 
 *** using CCD residue LV2 to construct LV2 ***
 *** finish making LV2 ***
 *** using CCD residue LV2 to construct LV23 ***
@@ -4118,7 +4121,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making G3A ***
+ERROR:root:Template G3A Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue G3A to construct G3A3 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -4126,7 +4129,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template G3A3 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue G3A to construct G3A5p ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -4134,7 +4137,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template G3A5p Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue G3A to construct G3A5 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -4144,7 +4147,8 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template G3A5 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
+WARNING:root:No template generated for G3A. 
 *** using CCD residue GCP to construct GCP ***
 WARNING:root:Molecule breaks into fragments during the deleterious editing of GCP -> skipping the vaiant... 
 *** using CCD residue GCP to construct GCP3 ***
@@ -4498,13 +4502,13 @@ WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-pri
 *** using CCD residue WUH to construct WUH ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({48, 1}) to be in self.link_labels={'48': '3-prime'}
+ERROR:root:Template WUH Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({48, 1}) to be in self.link_labels={'48': '3-prime'}
 *** using CCD residue WUH to construct WUH3 ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making WUH3 ***
+ERROR:root:Template WUH3 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({50}) to be in self.link_labels={}
 *** using CCD residue WUH to construct WUH5p ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
@@ -4514,7 +4518,7 @@ WARNING:root:Molecule doesn't contain allowed_smarts: [OX2][CX4][CX4]1[OX2][CX4]
 WARNING:root:No matched atoms to cap -> cap returning original mol...
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({40, 1, 45}) to be in self.link_labels={'45': '3-prime'}
+ERROR:root:Template WUH5 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs ({40, 1, 45}) to be in self.link_labels={'45': '3-prime'}
 *** using CCD residue X6H to construct X6H ***
 *** finish making X6H ***
 *** using CCD residue X6H to construct X6H3 ***
@@ -5734,7 +5738,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-*** finish making GP3 ***
+ERROR:root:Template GP3 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GP3 to construct GP33 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -5742,7 +5746,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GP33 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GP3 to construct GP35p ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -5750,7 +5754,7 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GP35p Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
 *** using CCD residue GP3 to construct GP35 ***
 WARNING:root:Molecule contain multiple copies of allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no pattern-based action will be made. 
 WARNING:root:No matched atoms to delete -> embed returning original mol...
@@ -5760,7 +5764,8 @@ WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with ne
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass redundancy check -> skipping the template... 
+ERROR:root:Template GP35 Failed to pass ResidueTemplate check. Error: expected any atom with non-real Hs (set()) to be in self.link_labels={}
+WARNING:root:No template generated for GP3. 
 *** using CCD residue GSR to construct GSR ***
 *** finish making GSR ***
 *** using CCD residue GSR to construct GSR3 ***
@@ -7062,5 +7067,5 @@ WARNING:root:No template generated for ZHP.
 ERROR:root:Failed to create rdkitmol from cif. Error: Explicit valence for atom # 48 O, 3, is greater than permitted -> template for ZIV will be None. 
 WARNING:root:No template generated for ZIV. 
 NAKB_templates.json <-- Json File for New Chemical Templates
-Generated 1786 templates for 458 residues
-Execution time: 68.12900424003601 seconds
+Generated 1778 templates for 453 residues
+Execution time: 60.92876696586609 seconds

@@ -558,13 +558,13 @@ WARNING:root:No template generated for 2DA.
 *** using CCD residue TTD to construct TTD ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({1, 37}) to be in link_labels={'37': '3-prime'}
+ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({1, 37}) to be in self.link_labels={'37': '3-prime'}
 *** using CCD residue TTD to construct TTD3 ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({39}) to be in link_labels={}
+*** finish making TTD3 ***
 *** using CCD residue TTD to construct TTD5p ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
@@ -574,7 +574,7 @@ WARNING:root:Molecule doesn't contain allowed_smarts: [OX2][CX4][CX4]1[OX2][CX4]
 WARNING:root:No matched atoms to cap -> cap returning original mol...
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({1, 34, 29}) to be in link_labels={'34': '3-prime'}
+ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({1, 34, 29}) to be in self.link_labels={'34': '3-prime'}
 *** using CCD residue ORP to construct ORP ***
 *** finish making ORP ***
 *** using CCD residue ORP to construct ORP3 ***
@@ -2310,13 +2310,13 @@ WARNING:root:No template generated for T5S.
 *** using CCD residue T64 to construct T64 ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({27, 52}) to be in link_labels={'52': '3-prime'}
+ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({27, 52}) to be in self.link_labels={'52': '3-prime'}
 *** using CCD residue T64 to construct T643 ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({30}) to be in link_labels={}
+*** finish making T643 ***
 *** using CCD residue T64 to construct T645p ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
@@ -2326,7 +2326,7 @@ WARNING:root:Molecule doesn't contain allowed_smarts: [OX2][CX4][CX4]1[OX2][CX4]
 WARNING:root:No matched atoms to cap -> cap returning original mol...
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({49, 27, 44}) to be in link_labels={'49': '3-prime'}
+ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({49, 27, 44}) to be in self.link_labels={'49': '3-prime'}
 WARNING:root:Molecule doesn't contain embed_allowed_smarts: [O][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H] -> no templates will be made. 
 WARNING:root:No template generated for TT. 
 *** using CCD residue UAR to construct UAR ***
@@ -4498,13 +4498,13 @@ WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-pri
 *** using CCD residue WUH to construct WUH ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({48, 1}) to be in link_labels={'48': '3-prime'}
+ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({48, 1}) to be in self.link_labels={'48': '3-prime'}
 *** using CCD residue WUH to construct WUH3 ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 WARNING:root:Molecule doesn't contain wanted_smarts: [O+0X2h1:1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [O+0X2h1:1] -> linker label for 3-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({50}) to be in link_labels={}
+*** finish making WUH3 ***
 *** using CCD residue WUH to construct WUH5p ***
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
@@ -4514,7 +4514,7 @@ WARNING:root:Molecule doesn't contain allowed_smarts: [OX2][CX4][CX4]1[OX2][CX4]
 WARNING:root:No matched atoms to cap -> cap returning original mol...
 WARNING:root:Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 WARNING:root:Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({40, 1, 45}) to be in link_labels={'45': '3-prime'}
+ERROR:root:Template Failed to pass Meeko check. Error: expected any atom with non-real Hs ({40, 1, 45}) to be in self.link_labels={'45': '3-prime'}
 *** using CCD residue X6H to construct X6H ***
 *** finish making X6H ***
 *** using CCD residue X6H to construct X6H3 ***
@@ -7062,5 +7062,5 @@ WARNING:root:No template generated for ZHP.
 ERROR:root:Failed to create rdkitmol from cif. Error: Explicit valence for atom # 48 O, 3, is greater than permitted -> template for ZIV will be None. 
 WARNING:root:No template generated for ZIV. 
 NAKB_templates.json <-- Json File for New Chemical Templates
-Generated 1783 templates for 458 residues
-Execution time: 220.30776596069336 seconds
+Generated 1786 templates for 458 residues
+Execution time: 68.12900424003601 seconds

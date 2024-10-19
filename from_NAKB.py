@@ -3,7 +3,7 @@ start_time = time.time()
 
 import gemmi
 import json
-from pathlib import Path
+import pathlib
 from rdkit import Chem
 from rdkit.Chem import rdmolops
 
@@ -68,9 +68,9 @@ variant_dict = {
     }
 
 # Single Make Process
-def make_variants(source_cif: str, basename: str) -> list[ChemicalComponent]: 
+def make_variants(basename: str) -> list[ChemicalComponent]: 
 
-    cc_from_cif = ChemicalComponent.from_cif(source_cif, basename)
+    cc_from_cif = ChemicalComponent.from_cif(fetch_from_pdb(basename), basename)
     if cc_from_cif is None:
         return None
 
@@ -105,7 +105,7 @@ def make_variants(source_cif: str, basename: str) -> list[ChemicalComponent]:
 
         # Try Meeko check
         try:
-            cc.meeko_check()
+            cc.ResidueTemplate_check()
         except Exception as e:
             logging.error(f"Template Failed to pass Meeko check. Error: {e}")
             continue
@@ -120,21 +120,23 @@ def make_variants(source_cif: str, basename: str) -> list[ChemicalComponent]:
 
     return cc_variants
 
+
+# Check conflicts
+default_json_fn = '/Users/amyhe/Desktop/0_forks/Meeko/meeko/data/residue_chem_templates.json'
+with open(default_json_fn, 'r') as f:
+    default_dict = json.load(f)
+default_resnames = default_dict['ambiguous'].keys() | default_dict['residue_templates'].keys()
+
+
 # Run Make Process
 cc_byparent = {}
 for cc_name in mappable: 
 
-    url = f"https://files.rcsb.org/ligands/download/{cc_name}.cif"
-    file_path = f"{cc_name}.cif"
-
-    try:
-        urllib.request.urlretrieve(url, file_path)
-        logging.info(f"File downloaded successfully: {file_path}")
-    except Exception as e:
-        logging.error(f"Failed to download file for {cc_name}. Error: {e}")
+    if cc_name in default_resnames: 
+        logging.error(f"Name conflict with existing residue: {cc_name}. Skipping... ")
         continue
 
-    variant_list = make_variants(file_path, cc_name)
+    variant_list = make_variants(cc_name)
     if variant_list:
         cc_byparent[cc_name] = variant_list
     else:

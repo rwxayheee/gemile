@@ -15,17 +15,19 @@ logger = logging.getLogger('chemtempgen')
 logger.setLevel(logging.WARNING)
 handler = logging.StreamHandler(sys.stdout)
 
+from chemtempgen import *
+
 # Download modified_to_change_data.json
-import urllib.request
-
-url = "https://rna.bgsu.edu/modified/modified_to_change_data.json"
+# import urllib.request
+# 
+# url = "https://rna.bgsu.edu/modified/modified_to_change_data.json"
 file_path = "modified_to_change_data.json"
-
-try:
-    urllib.request.urlretrieve(url, file_path)
-    logging.info(f"File downloaded successfully: {file_path}")
-except Exception as e:
-    logging.error(f"Failed to download file. Error: {e}")
+# 
+# try:
+#     urllib.request.urlretrieve(url, file_path)
+#     logging.info(f"File downloaded successfully: {file_path}")
+# except Exception as e:
+#     logging.error(f"Failed to download file. Error: {e}")
 
 # Load JSON file
 with open(file_path, 'r') as f:
@@ -67,62 +69,6 @@ variant_dict = {
         "5": ({"[O][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}}), # 5' end nucleoside (canonical X5 in Amber)
     }
 
-# Single Make Process
-def make_variants(basename: str) -> list[ChemicalComponent]: 
-
-    cc_from_cif = ChemicalComponent.from_cif(fetch_from_pdb(basename), basename)
-    if cc_from_cif is None:
-        return None
-
-    editable = cc_from_cif.rdkit_mol.GetSubstructMatches(Chem.MolFromSmarts(embed_allowed_smarts))
-    if not editable:
-        logging.warning(f"Molecule doesn't contain embed_allowed_smarts: {embed_allowed_smarts} -> no templates will be made. ")
-        return None
-
-    cc_variants = []
-    for suffix in variant_dict:
-        cc = copy.deepcopy(cc_from_cif)
-        cc.resname += suffix
-        print(f"*** using CCD residue {basename} to construct {cc.resname} ***")
-
-        cc = (
-            cc
-            .make_canonical(acidic_proton_loc = acidic_proton_loc_canonical) 
-            .make_embedded(allowed_smarts = embed_allowed_smarts, 
-                           leaving_smarts_loc = variant_dict[suffix][0])
-            )
-        if len(rdmolops.GetMolFrags(cc.rdkit_mol))>1:
-            logging.warning(f"Molecule breaks into fragments during the deleterious editing of {cc.resname} -> skipping the vaiant... ")
-            continue
-
-        cc = (
-            cc
-            .make_capped(allowed_smarts = cap_allowed_smarts, 
-                         capping_smarts_loc = variant_dict[suffix][1]) 
-            .make_pretty_smiles()
-            .make_link_labels_from_patterns(pattern_to_label_mapping = pattern_to_label_mapping_standard)
-            )
-
-        # Check
-        try:
-            cc.ResidueTemplate_check()
-        except Exception as e:
-            err = f"Template {cc.resname} Failed to pass ResidueTemplate check. Error: {e}"
-            # raise ChemTempCreationError(err)
-            logging.error(err)
-            continue
-        
-        # Check redundancy
-        if any(cc == other_variant for other_variant in cc_variants):
-            logging.error(f"Template Failed to pass redundancy check -> skipping the template... ")
-            continue
-
-        cc_variants.append(cc)
-        print(f"*** finish making {cc.resname} ***")
-
-    return cc_variants
-
-
 # Check conflicts
 default_json_fn = '/Users/amyhe/Desktop/0_forks/Meeko/meeko/data/residue_chem_templates.json'
 with open(default_json_fn, 'r') as f:
@@ -138,7 +84,7 @@ for cc_name in mappable:
         logging.error(f"Name conflict with existing residue: {cc_name}. Skipping... ")
         continue
 
-    variant_list = make_variants(cc_name)
+    variant_list = build_linked_CCs(cc_name)
     if variant_list:
         cc_byparent[cc_name] = variant_list
     else:

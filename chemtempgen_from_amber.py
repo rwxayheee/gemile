@@ -490,14 +490,14 @@ class ChemicalComponent:
         try:    
             rwmol.UpdatePropertyCache()
         except Exception as e:
-            logger.error(f"Failed to create rdkitmol from cif. Error: {e} -> template for {resname} will be None. ")
+            logger.error(f"Failed to create rdkitmol from lib. Error: {e} -> template for {resname} will be None. ")
             return None
         
         # Check implicit Hs
         print(Chem.MolToSmiles(rwmol))
         total_implicit_hydrogens = sum(atom.GetNumImplicitHs() for atom in rwmol.GetAtoms())
         if total_implicit_hydrogens > 0:
-            logger.error(f"rdkitmol from cif has implicit hydrogens. -> template for {resname} will be None. ")
+            logger.error(f"rdkitmol from lib has implicit hydrogens. -> template for {resname} will be None. ")
             return None
 
         rdkit_mol = rwmol.GetMol()
@@ -506,7 +506,6 @@ class ChemicalComponent:
         smiles_exh, atom_name = get_smiles_with_atom_names(rdkit_mol)
         
         return cls(rdkit_mol, resname, smiles_exh, atom_name)
-
 
 
     @classmethod

@@ -374,10 +374,13 @@ class ChemicalComponent:
         residues = parmed.amber.offlib.AmberOFFLibrary.parse(source_lib)
         residue = residues[resname]
 
-        def guess_formal_charge(residue: parmed.modeller.residue.ResidueTemplate) -> parmed.modeller.residue.ResidueTemplate: 
-
-            def num_atom_partners(atom: parmed.Atom) -> int: 
+        def num_atom_partners(atom: parmed.Atom) -> int: 
                 return len(atom.bond_partners) + (atom is atom.residue.head) + (atom is atom.residue.tail)
+        
+        def num_current_valence(atom: parmed.Atom) -> int: 
+                return sum(bond.order for bond in atom.bonds) + (atom is atom.residue.head) + (atom is atom.residue.tail) + (atom.formal_charge == -1)
+
+        def guess_formal_charge(residue: parmed.modeller.residue.ResidueTemplate) -> parmed.modeller.residue.ResidueTemplate: 
         
             for atom in residue.atoms:
                 if atom.type=='N3' or (atom.atomic_number==7 and num_atom_partners(atom)==4): 
@@ -406,7 +409,7 @@ class ChemicalComponent:
                                 sp.formal_charge = -1
                             fp.formal_charge = 0
                     elif len(blunt_sp)==2: 
-                        if fp.atomic_number in (15): # R-P(=O)([O-])([O-])
+                        if fp.atomic_number == 15: # R-P(=O)([O-])([O-])
                             atom.formal_charge = 0
                             for bond in atom.bonds:
                                 if fp in (bond.atom1, bond.atom2):
@@ -418,9 +421,6 @@ class ChemicalComponent:
             return residue
         
         def guess_bond_order(residue: parmed.modeller.residue.ResidueTemplate) -> parmed.modeller.residue.ResidueTemplate: 
-            
-            def num_current_valence(atom: parmed.Atom) -> int: 
-                return sum(bond.order for bond in atom.bonds) + (atom is atom.residue.head) + (atom is atom.residue.tail) + (atom.formal_charge == -1)
 
             ref_valence = {
                 8: 2, # divalent: O
@@ -438,6 +438,18 @@ class ChemicalComponent:
                     if all(a.atomic_number in ref_valence for a in (bond.atom1, bond.atom2)): 
                         if all(num_current_valence(a) < ref_valence[a.atomic_number] for a in (bond.atom1, bond.atom2)):
                             bond.order = 2
+
+            for atom in residue.atoms:
+                if atom.atomic_number == 6 and num_current_valence(atom) < ref_valence[atom.atomic_number]: 
+                    for fp in atom.bond_partners: 
+                        if fp.atomic_number == 7 and \
+                            fp.formal_charge == 0 and \
+                            num_atom_partners(fp) == 3 and \
+                            num_current_valence(atom) == 3: 
+                            fp.formal_charge = 1
+                            for bond in atom.bonds:
+                                if fp in (bond.atom1, bond.atom2):
+                                    bond.order = 2
 
             return residue
         
@@ -494,9 +506,9 @@ class ChemicalComponent:
             return None
         
         # Check implicit Hs
-        print(Chem.MolToSmiles(rwmol))
         total_implicit_hydrogens = sum(atom.GetNumImplicitHs() for atom in rwmol.GetAtoms())
         if total_implicit_hydrogens > 0:
+            print(Chem.MolToSmiles(rwmol))
             logger.error(f"rdkitmol from lib has implicit hydrogens. -> template for {resname} will be None. ")
             return None
 

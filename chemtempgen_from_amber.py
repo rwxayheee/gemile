@@ -1,4 +1,5 @@
 import gemmi
+import parmed
 import json
 import pathlib
 import copy
@@ -364,6 +365,149 @@ class ChemicalComponent:
         if isinstance(other, ChemicalComponent):
             return self.smiles_exh == other.smiles_exh and self.atom_name == other.atom_name
         return False
+    
+    @classmethod
+    def from_lib(cls, source_lib: str, resname: str):
+        """Create ChemicalComponent from a off library file and a searchable residue name in file."""
+
+        # Parse parmed ResidueTemplate object from an OFF library
+        residues = parmed.amber.offlib.AmberOFFLibrary.parse(source_lib)
+        residue = residues[resname]
+
+        def guess_formal_charge(residue: parmed.modeller.residue.ResidueTemplate) -> parmed.modeller.residue.ResidueTemplate: 
+
+            def num_atom_partners(atom: parmed.Atom) -> int: 
+                return len(atom.bond_partners) + (atom is atom.residue.head) + (atom is atom.residue.tail)
+        
+            for atom in residue.atoms:
+                if atom.type=='N3' or (atom.atomic_number==7 and num_atom_partners(atom)==4): 
+                    atom.formal_charge = 1
+                elif atom.atomic_number==16 and num_atom_partners(atom)==1: 
+                    atom.formal_charge = -1
+                elif atom.atomic_number==8 and num_atom_partners(atom)==1 and atom.formal_charge is None: 
+                    fp = atom.bond_partners[0]
+                    sps = set(sp for sp in fp.bond_partners if sp is not atom)
+                    blunt_sp = set(sp for sp in sps if sp.atomic_number==8 and num_atom_partners(sp)==1)            
+                    if len(blunt_sp)==0: # Phenolate
+                        if fp.type=='CA': 
+                            atom.formal_charge = -1
+                        else:
+                            atom.formal_charge = 0
+                            for bond in atom.bonds:
+                                if fp in (bond.atom1, bond.atom2):
+                                    bond.order = 2
+                    elif len(blunt_sp)==1: 
+                        if fp.atomic_number in (6, 15): # R-C(=O)([O-]), R-P(R)(=O)([O-])
+                            atom.formal_charge = 0
+                            for bond in atom.bonds:
+                                if fp in (bond.atom1, bond.atom2):
+                                    bond.order = 2
+                            for sp in blunt_sp:
+                                sp.formal_charge = -1
+                            fp.formal_charge = 0
+                    elif len(blunt_sp)==2: 
+                        if fp.atomic_number in (15): # R-P(=O)([O-])([O-])
+                            atom.formal_charge = 0
+                            for bond in atom.bonds:
+                                if fp in (bond.atom1, bond.atom2):
+                                    bond.order = 2
+                            for sp in blunt_sp:
+                                sp.formal_charge = -1               
+                elif atom.formal_charge is None: 
+                    atom.formal_charge = 0
+            return residue
+        
+        def guess_bond_order(residue: parmed.modeller.residue.ResidueTemplate) -> parmed.modeller.residue.ResidueTemplate: 
+            
+            def num_current_valence(atom: parmed.Atom) -> int: 
+                return sum(bond.order for bond in atom.bonds) + (atom is atom.residue.head) + (atom is atom.residue.tail) + (atom.formal_charge == -1)
+
+            ref_valence = {
+                8: 2, # divalent: O
+                7: 3, # trivalent: N
+                6: 4, # tetravalent: C
+                }
+            
+            for bond in residue.bonds:
+                if bond.order == 1:
+                    if any(a.atomic_number == 1 for a in (bond.atom1, bond.atom2)):
+                        continue
+                    if set(a.name for a in (bond.atom1, bond.atom2)) == {'NY','CY'}: 
+                        bond.order = 3
+                        continue
+                    if all(a.atomic_number in ref_valence for a in (bond.atom1, bond.atom2)): 
+                        if all(num_current_valence(a) < ref_valence[a.atomic_number] for a in (bond.atom1, bond.atom2)):
+                            bond.order = 2
+
+            return residue
+        
+        residue = guess_formal_charge(residue)
+        residue = guess_bond_order(residue)
+
+        # Summon rdkit atoms into empty RWMol
+        rwmol = Chem.RWMol()
+        for atom in residue.atoms:
+            rdkit_atom = Chem.Atom(atom.atomic_number)
+            rdkit_atom.SetProp('atom_id', atom.name)
+            rdkit_atom.SetFormalCharge(atom.formal_charge)
+            rwmol.AddAtom(rdkit_atom)
+            last_idx = len(rwmol.GetAtoms())
+            
+            # cap head and tail atoms
+            if atom is residue.head or atom is residue.tail:
+                H_name = 'H_h' if atom is residue.head else 'H_t'
+                H_atom = Chem.Atom('H')
+                H_atom.SetProp('atom_id', H_name)
+                rwmol.AddAtom(H_atom)
+                rwmol.AddBond(last_idx - 1, last_idx, Chem.BondType.SINGLE)
+
+            # pass formal charge
+            rdkit_atom.SetFormalCharge(atom.formal_charge)
+
+        # Check if rwmol contains unexpected elements
+        if mol_contains_unexpected_element(rwmol):
+            logger.warning(f"Molecule contains unexpected elements -> template for {resname} will be None. ")
+            return None
+        
+        # Map atom_id (atom names) with rdkit idx
+        name_to_idx_mapping = {atom.GetProp('atom_id'): idx for (idx, atom) in enumerate(rwmol.GetAtoms())}
+
+        # Connect atoms by bonds
+        bond_type_mapping = {
+            1: Chem.BondType.SINGLE,
+            2: Chem.BondType.DOUBLE,
+            3: Chem.BondType.TRIPLE,
+        }
+
+        # Connect atoms by bonds
+        for bond in residue.bonds:
+            atom1, atom2 = (bond.atom1, bond.atom2)
+            rwmol.AddBond(name_to_idx_mapping[atom1.name], 
+                          name_to_idx_mapping[atom2.name], 
+                          bond_type_mapping.get(bond_type_mapping[bond.order], Chem.BondType.UNSPECIFIED))
+            
+        # Finish eidting mol 
+        try:    
+            rwmol.UpdatePropertyCache()
+        except Exception as e:
+            logger.error(f"Failed to create rdkitmol from cif. Error: {e} -> template for {resname} will be None. ")
+            return None
+        
+        # Check implicit Hs
+        print(Chem.MolToSmiles(rwmol))
+        total_implicit_hydrogens = sum(atom.GetNumImplicitHs() for atom in rwmol.GetAtoms())
+        if total_implicit_hydrogens > 0:
+            logger.error(f"rdkitmol from cif has implicit hydrogens. -> template for {resname} will be None. ")
+            return None
+
+        rdkit_mol = rwmol.GetMol()
+            
+        # Get Smiles with explicit Hs and ordered atom names
+        smiles_exh, atom_name = get_smiles_with_atom_names(rdkit_mol)
+        
+        return cls(rdkit_mol, resname, smiles_exh, atom_name)
+
+
 
     @classmethod
     def from_cif(cls, source_cif: str, resname: str):

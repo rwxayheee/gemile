@@ -127,7 +127,7 @@ def embed(mol: Chem.Mol, allowed_smarts: str,
 
     if leaving_atoms_idx and alsoHs:
         atoms_in_mol = [atom for atom in mol.GetAtoms()]
-        leaving_Hs = (ne for atom_idx in leaving_atoms_idx for ne in atoms_in_mol[atom_idx].GetNeighbors() if ne.GetAtomicNum() == 1)
+        leaving_Hs = (ne for atom_idx in leaving_atoms_idx.copy() for ne in atoms_in_mol[atom_idx].GetNeighbors() if ne.GetAtomicNum() == 1)
         leaving_atoms_idx.update(atom.GetIdx() for atom in leaving_Hs)
 
     if not leaving_atoms_idx:
@@ -944,7 +944,7 @@ acidic_proton_loc_canonical = {
     }
 
 # Make free (noncovalent) CC
-def build_noncovalent_CC(basename: str) -> ChemicalComponent: 
+def build_noncovalent_CC(basename: str, acidic_proton_loc = acidic_proton_loc_canonical) -> ChemicalComponent: 
 
     with ChemicalComponent_LoggingControler(): 
         cc_from_cif = ChemicalComponent.from_cif(fetch_from_pdb(basename), basename)
@@ -954,7 +954,7 @@ def build_noncovalent_CC(basename: str) -> ChemicalComponent:
         cc = copy.deepcopy(cc_from_cif)
         logger.info(f"*** using CCD ligand {basename} to construct residue {cc.resname} ***")
 
-        cc = cc.make_canonical(acidic_proton_loc = acidic_proton_loc_canonical)
+        cc = cc.make_canonical(acidic_proton_loc = acidic_proton_loc)
         if len(rdmolops.GetMolFrags(cc.rdkit_mol))>1:
             err = f"Template Generation failed for {cc.resname}. Error: Molecule breaks into fragments during the deleterious editing. "
             raise RuntimeError(err)
@@ -976,7 +976,8 @@ def add_variants(cc_orig: ChemicalComponent, cc_list: list[ChemicalComponent] = 
                  embed_allowed_smarts: str = None, 
                  cap_allowed_smarts: str = None, cap_protonate: bool = False, 
                  pattern_to_label_mapping_standard = dict[str, str], 
-                 variant_dict = dict[str, tuple]) -> list[ChemicalComponent]: 
+                 variant_dict = dict[str, tuple], 
+                 acidic_proton_loc = acidic_proton_loc_canonical) -> list[ChemicalComponent]: 
 
         for suffix in variant_dict:
             cc = copy.deepcopy(cc_orig)
@@ -985,7 +986,7 @@ def add_variants(cc_orig: ChemicalComponent, cc_list: list[ChemicalComponent] = 
 
             cc = (
                 cc
-                .make_canonical(acidic_proton_loc = acidic_proton_loc_canonical) 
+                .make_canonical(acidic_proton_loc = acidic_proton_loc) 
                 .make_embedded(allowed_smarts = embed_allowed_smarts, 
                             leaving_smarts_loc = variant_dict[suffix][0])
                 )

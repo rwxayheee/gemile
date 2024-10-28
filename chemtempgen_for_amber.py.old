@@ -378,24 +378,13 @@ class ChemicalComponent:
                 return len(atom.bond_partners) + (atom is atom.residue.head) + (atom is atom.residue.tail)
         
         def num_current_valence(atom: parmed.Atom) -> int: 
-                return sum(bond.order for bond in atom.bonds) + sum((atom is atom.residue.head, 
-                                                                    atom is atom.residue.tail, 
-                                                                    atom.formal_charge == -1)) - (atom.formal_charge == 1)
+                return sum(bond.order for bond in atom.bonds) + (atom is atom.residue.head) + (atom is atom.residue.tail) + (atom.formal_charge == -1)
 
         def guess_formal_charge(residue: parmed.modeller.residue.ResidueTemplate) -> parmed.modeller.residue.ResidueTemplate: 
         
             for atom in residue.atoms:
-                if atom.atomic_number==7:
-                    atom.formal_charge = 0
-                    if num_atom_partners(atom)==4: 
-                        atom.formal_charge = 1
-                    elif num_atom_partners(atom)==1: 
-                        atom.formal_charge = -1
-                        fp = atom.bond_partners[0]
-                        fp.formal_charge = 1
-                        for bond in atom.bonds:
-                            if fp in (bond.atom1, bond.atom2):
-                                bond.order = 2
+                if atom.atomic_number==7 and num_atom_partners(atom)==4: 
+                    atom.formal_charge = 1
                 elif atom.atomic_number==16 and num_atom_partners(atom)==1: 
                     atom.formal_charge = -1
                 elif atom.atomic_number==8 and num_atom_partners(atom)==1 and atom.formal_charge is None: 
@@ -439,144 +428,24 @@ class ChemicalComponent:
                 6: 4, # tetravalent: C
                 }
             
-            unspec_bonds = set(
+            sus_bonds = set(
                 bond for bond in residue.bonds
                 if bond.order == 1 and not any(a.atomic_number == 1 for a in (bond.atom1, bond.atom2))
                 )
             
-            for bond in unspec_bonds.copy():
+            for bond in sus_bonds:
                 if set(a.name for a in (bond.atom1, bond.atom2)) == {'NY','CY'}: 
                     bond.order = 3
-                    unspec_bonds.remove(bond)
+                    continue
 
-                if any(a.atomic_number not in ref_valence for a in (bond.atom1, bond.atom2)) or \
-                any(num_current_valence(a) == ref_valence[a.atomic_number] for a in (bond.atom1, bond.atom2)):     
-                    unspec_bonds.remove(bond)
-            
-            import networkx as nx
-
-            def find_longest_valid_path(graph):
-                longest_path = []
-
-                # Helper function to perform DFS
-                def dfs(current_node, current_path, visited_edges, node_visits):
-                    nonlocal longest_path
-
-                    # Check if the path is valid (even length) and if it's the longest valid path so far
-                    if (len(current_path) == len(node_visits) and  # Path length
-                        len(current_path) - 1 > len(longest_path) and  # Longer than previous longest
-                        all(v <= (2 if node == current_path[0] else 1) for node, v in node_visits.items()) and  # Start node can be visited twice
-                        all(graph.degree[node] == 1 if node_visits[node] == 2 else True for node in current_path)  # Degree 1 nodes as start/end
-                    ):
-                        # Update longest path, making sure to copy current_path
-                        longest_path = list(current_path)
-                        print(f"{resname}: New Longest Valid Path Found: {longest_path}")
-
-                    # Traverse neighbors
-                    for neighbor in sorted(graph.neighbors(current_node)):  # Sorted for consistent traversal
-                        edge = frozenset([current_node, neighbor])  # Treat edge as unordered set
-
-                        if edge not in visited_edges:
-                            # Visit edge
-                            visited_edges.add(edge)
-                            current_path.append(neighbor)
-                            node_visits[neighbor] += 1
-
-                            # Recursive DFS
-                            dfs(neighbor, current_path, visited_edges, node_visits)
-
-                            # Backtrack
-                            visited_edges.remove(edge)
-                            node_visits[neighbor] -= 1
-                            current_path.pop()
-
-                    # Special condition: check if returning to the start node with even length
-                    if (current_node == current_path[0] and
-                        len(current_path) % 2 == 0 and
-                        len(current_path) - 1 > len(longest_path)):
-                        longest_path = list(current_path)
-                        print(f"{resname}: Loop Back to Start with Even Length: {longest_path}")
-
-                # Initialize node visit counts
-                node_visits = {node: 0 for node in graph.nodes}
-
-                # Start DFS from all nodes (since start/end nodes can be visited differently)
-                for start_node in graph.nodes:
-                    node_visits[start_node] += 1
-                    dfs(start_node, [start_node], set(), node_visits)
-                    node_visits[start_node] -= 1
-
-                return longest_path
-
-
-            def find_isolated_subgraphs(graph):
-                connected_components = list(nx.connected_components(graph))
-                isolated_subgraphs = [graph.subgraph(component).copy() for component in connected_components]
-                
-                return isolated_subgraphs
-            
-            G = nx.Graph()
-            atoms_in_residue = residue.atoms
-            unspec_bonds_by_idx_tuple = {
-                frozenset([atoms_in_residue.index(bond.atom1), atoms_in_residue.index(bond.atom2)]): bond
-                for bond in unspec_bonds
-            }
-            G.add_edges_from(unspec_bonds_by_idx_tuple.keys())
-            sorted_isolated_subgraphs = sorted(find_isolated_subgraphs(G), key=lambda subgraph: len(subgraph.nodes()), reverse=True)
-
-            for idx, g in enumerate(sorted_isolated_subgraphs):
-
-                leaf_nodes = [node for node in g.nodes() if g.degree(node) == 1]
-                print(resname, "Leaf Nodes", leaf_nodes)
-
-                if len(leaf_nodes) > 2: 
-                    print("too many leaf nodes")
-                    three_degree_nodes = [node for node in g.nodes() if g.degree(node) == 3]
+                if all(a.atomic_number in ref_valence for a in (bond.atom1, bond.atom2)) and \
+                all(num_current_valence(a) < ref_valence[a.atomic_number] for a in (bond.atom1, bond.atom2)):     
+                    bond.order = 2
                     
-                    distance = {}
-                    for i in leaf_nodes:
-                        distance[i] = min(nx.shortest_path_length(g, source=i, target=j) for j in three_degree_nodes)
-
-                    print(distance)
-
-                    leaf_nodes_togo = [k for k in distance if distance[k]==1]
-                    if len(leaf_nodes_togo) < len(leaf_nodes) - 2:
-                        raise RuntimeError("cannot sanitize bond path")
-                    else:
-                        for idx in leaf_nodes_togo[:len(leaf_nodes) - 2]:
-                            atom = atoms_in_residue[idx]
-                            for bond in atom.bonds: 
-                                if bond.order == 1:
-                                    fp = ({bond.atom1, bond.atom2} - {atom}).pop()
-                                    if fp.atomic_number == 7 and \
-                                        fp.formal_charge == 0 and \
-                                        num_atom_partners(fp) == 3 and \
-                                        num_current_valence(atom) == 3: 
-                                        fp.formal_charge = 1
-                                        for bond in atom.bonds:
-                                            if fp in (bond.atom1, bond.atom2):
-                                                bond.order = 2
-                                        print("Setting C=[N+]:", 
-                                        atom.name, 
-                                        "-", 
-                                        fp.name,
-                                        )
-                                        g.remove_node(idx)
-
-                bond_path = find_longest_valid_path(g)
-                print(resname, "path", bond_path)
-                if len(bond_path)>=2: 
-                    print("Found path:", 
-                          "-".join([atoms_in_residue[atom_idx].name for atom_idx in bond_path]))
-                    bonds_key_in_chain = [frozenset([i, j]) for i, j in zip(bond_path, bond_path[1:])]
-                    double_bonds_keys = bonds_key_in_chain[0::2]
-                    for bond_idx in double_bonds_keys:
-                        unspec_bonds_by_idx_tuple[bond_idx].order = 2
-                        print("Setting double bond:", 
-                              atoms_in_residue[list(bond_idx)[0]].name, 
-                              "=", 
-                              atoms_in_residue[list(bond_idx)[1]].name,
-                              )
+            for bond in sus_bonds:
+                if all(a.atomic_number in ref_valence for a in (bond.atom1, bond.atom2)) and \
+                all(num_current_valence(a) < ref_valence[a.atomic_number] for a in (bond.atom1, bond.atom2)):
+                    bond.order = 2
 
             for atom in residue.atoms:
                 if atom.atomic_number == 6 and num_current_valence(atom) < ref_valence[atom.atomic_number]: 
@@ -586,23 +455,11 @@ class ChemicalComponent:
                             if fp.atomic_number == 7 and \
                                 fp.formal_charge == 0 and \
                                 num_atom_partners(fp) == 3 and \
-                                num_current_valence(atom) == 3: 
+                                num_current_valence(atom) <= 3: 
                                 fp.formal_charge = 1
                                 for bond in atom.bonds:
                                     if fp in (bond.atom1, bond.atom2):
                                         bond.order = 2
-                                print("Setting C=[N+]:", 
-                                atom.name, 
-                                "-", 
-                                fp.name,
-                                )
-
-            for atom in residue.atoms:
-                if atom.atomic_number == 7 and num_current_valence(atom) > ref_valence[atom.atomic_number]: 
-                    atom.formal_charge = 1
-                    print("Charging N+:",
-                          atom.name, 
-                          )
 
             return residue
         
@@ -612,8 +469,6 @@ class ChemicalComponent:
         # Summon rdkit atoms into empty RWMol
         rwmol = Chem.RWMol()
         for atom in residue.atoms:
-            if atom.atomic_number < 0:
-                raise RuntimeError(f"Corrupt atomic number for {atom.name} in {resname}")
             rdkit_atom = Chem.Atom(atom.atomic_number)
             rdkit_atom.SetProp('atom_id', atom.name)
             rdkit_atom.SetFormalCharge(atom.formal_charge)
@@ -663,7 +518,8 @@ class ChemicalComponent:
         # Check implicit Hs
         total_implicit_hydrogens = sum(atom.GetNumImplicitHs() for atom in rwmol.GetAtoms())
         if total_implicit_hydrogens > 0:
-            print(resname, Chem.MolToSmiles(rwmol))
+            print({atom.GetProp('atom_id') for atom in rwmol.GetAtoms() if atom.GetNumImplicitHs()>0})
+            print(Chem.MolToSmiles(rwmol))
             logger.error(f"rdkitmol from lib has implicit hydrogens. -> template for {resname} will be None. ")
             return None
 

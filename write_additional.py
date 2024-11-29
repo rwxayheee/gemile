@@ -94,6 +94,7 @@ for recipe, libfiles in [(Amber_AA_recipe, AA_lib), (Amber_NA_recipe, NA_lib)]:
                                 )
                     
                     cc_from_lib = cc_from_lib.make_pretty_smiles()
+                    cc_from_lib.resname += "_fl"
                     amb_cc_list = [cc_from_lib]
                     
                     if not cc_variants: 

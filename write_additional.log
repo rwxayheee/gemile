@@ -332,12 +332,12 @@ Molecule doesn't contain pattern: [NX3h1] -> linker label for N-term will not be
 Molecule doesn't contain wanted_smarts: [CX3h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [CX3h1] -> linker label for C-term will not be made. 
 Y1P Leaf Nodes []
-Y1P: New Longest Valid Path Found: [15, 7, 8, 10, 12, 13]
-Y1P path [15, 7, 8, 10, 12, 13]
-Found path: CD2-CG-CD1-CE1-CZ-CE2
-Setting double bond: CG = CD2
-Setting double bond: CD1 = CE1
+Y1P: New Longest Valid Path Found: [13, 12, 10, 8, 7, 15]
+Y1P path [13, 12, 10, 8, 7, 15]
+Found path: CE2-CZ-CE1-CD1-CG-CD2
 Setting double bond: CZ = CE2
+Setting double bond: CD1 = CE1
+Setting double bond: CD2 = CG
 Lib to Template Success: Y1P
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -354,12 +354,12 @@ Molecule doesn't contain wanted_smarts: [CX3h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [CX3h1] -> linker label for C-term will not be made. 
 No CCD template generated for:  Y1P
 PTR Leaf Nodes []
-PTR: New Longest Valid Path Found: [12, 10, 8, 7, 15, 13]
-PTR path [12, 10, 8, 7, 15, 13]
-Found path: CZ-CE1-CD1-CG-CD2-CE2
-Setting double bond: CE1 = CZ
-Setting double bond: CD1 = CG
-Setting double bond: CE2 = CD2
+PTR: New Longest Valid Path Found: [15, 7, 8, 10, 12, 13]
+PTR path [15, 7, 8, 10, 12, 13]
+Found path: CD2-CG-CD1-CE1-CZ-CE2
+Setting double bond: CG = CD2
+Setting double bond: CD1 = CE1
+Setting double bond: CZ = CE2
 Lib to Template Success: PTR
 Atom # 0 (N) in mol doesn't have implicit Hs -> continue with next atom... 
 Molecule doesn't contain wanted_smarts: [NX3h1] -> continue with next pattern... 
@@ -509,12 +509,12 @@ Molecule doesn't contain wanted_smarts: [CX3h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [CX3h1] -> linker label for C-term will not be made. 
 No CCD template generated for:  CNX
 CYF Leaf Nodes [17]
-CYF: New Longest Valid Path Found: [10, 8, 7, 15, 13, 12, 17]
-CYF path [10, 8, 7, 15, 13, 12, 17]
-Found path: CE1-CD1-CG-CD2-CE2-CZ-C1
-Setting double bond: CD1 = CE1
-Setting double bond: CD2 = CG
-Setting double bond: CZ = CE2
+CYF: New Longest Valid Path Found: [13, 15, 7, 8, 10, 12, 17]
+CYF path [13, 15, 7, 8, 10, 12, 17]
+Found path: CE2-CD2-CG-CD1-CE1-CZ-C1
+Setting double bond: CE2 = CD2
+Setting double bond: CD1 = CG
+Setting double bond: CE1 = CZ
 Lib to Template Success: CYF
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
 /Users/amyhe/micromamba/envs/has_espaloma/lib/python3.10/site-packages/parmed/amber/offlib.py:372: AmberWarning: residue table predicted 25, not 26 atoms for residue ALY
@@ -750,12 +750,12 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-CMP Leaf Nodes [21, 13]
-CMP: New Longest Valid Path Found: [21, 17, 15, 13]
-CMP path [21, 17, 15, 13]
-Found path: N3-C4-C5-C6
-Setting double bond: C4 = N3
+CMP Leaf Nodes [13, 21]
+CMP: New Longest Valid Path Found: [13, 15, 17, 21]
+CMP path [13, 15, 17, 21]
+Found path: C6-C5-C4-N3
 Setting double bond: C6 = C5
+Setting double bond: C4 = N3
 Lib to Template Success: CMP
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
 Molecule doesn't contain wanted_smarts: [PX4]([H])(=O)([O])[OX2][CX4] -> continue with next pattern... 
@@ -835,12 +835,12 @@ Skipping existing residue:  DA
 Skipping existing residue:  DA3
 Skipping existing residue:  DA5
 DAN Leaf Nodes [11]
-DAN: New Longest Valid Path Found: [23, 22, 20, 19, 15, 14, 13, 11]
-DAN path [23, 22, 20, 19, 15, 14, 13, 11]
-Found path: C4-N3-C2-N1-C6-C5-N7-C8
-Setting double bond: N3 = C4
-Setting double bond: N1 = C2
-Setting double bond: C5 = C6
+DAN: New Longest Valid Path Found: [15, 19, 20, 22, 23, 14, 13, 11]
+DAN path [15, 19, 20, 22, 23, 14, 13, 11]
+Found path: C6-N1-C2-N3-C4-C5-N7-C8
+Setting double bond: N1 = C6
+Setting double bond: C2 = N3
+Setting double bond: C5 = C4
 Setting double bond: C8 = N7
 Lib to Template Success: DAN
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -876,12 +876,12 @@ No CCD template generated for:  DAN
 Skipping existing residue:  DC
 Skipping existing residue:  DC3
 Skipping existing residue:  DC5
-DCN Leaf Nodes [19, 11]
-DCN: New Longest Valid Path Found: [19, 15, 13, 11]
-DCN path [19, 15, 13, 11]
-Found path: N3-C4-C5-C6
-Setting double bond: N3 = C4
+DCN Leaf Nodes [11, 19]
+DCN: New Longest Valid Path Found: [11, 13, 15, 19]
+DCN path [11, 13, 15, 19]
+Found path: C6-C5-C4-N3
 Setting double bond: C6 = C5
+Setting double bond: N3 = C4
 Lib to Template Success: DCN
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -917,13 +917,13 @@ No CCD template generated for:  DCN
 Skipping existing residue:  DG
 Skipping existing residue:  DG3
 Skipping existing residue:  DG5
-DGN Leaf Nodes [11, 19]
-DGN: New Longest Valid Path Found: [11, 13, 14, 24, 23, 19]
-DGN path [11, 13, 14, 24, 23, 19]
-Found path: C8-N7-C5-C4-N3-C2
-Setting double bond: C8 = N7
-Setting double bond: C4 = C5
+DGN Leaf Nodes [19, 11]
+DGN: New Longest Valid Path Found: [19, 23, 24, 14, 13, 11]
+DGN path [19, 23, 24, 14, 13, 11]
+Found path: C2-N3-C4-C5-N7-C8
 Setting double bond: C2 = N3
+Setting double bond: C4 = C5
+Setting double bond: C8 = N7
 Lib to Template Success: DGN
 Atom # 0 (N) in mol doesn't have implicit Hs -> continue with next atom... 
 Molecule doesn't contain wanted_smarts: [NX3h1] -> continue with next pattern... 
@@ -1247,13 +1247,13 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  2RG
-2SC Leaf Nodes [15, 23]
-2SC: New Longest Valid Path Found: [15, 17, 18, 22, 23]
-2SC path [15, 17, 18, 22, 23]
-Found path: C2-N3-C4-C5-C6
-Setting double bond: N3 = C2
-Setting double bond: C4 = C5
-Setting C=[N+]: C6 - N1
+2SC Leaf Nodes [23, 15]
+2SC: New Longest Valid Path Found: [23, 22, 18, 17, 15]
+2SC path [23, 22, 18, 17, 15]
+Found path: C6-C5-C4-N3-C2
+Setting double bond: C5 = C6
+Setting double bond: N3 = C4
+Setting C=[N+]: C2 - N1
 Error during template generation for:  2SC
 Corrupt atomic number for S2 in 2SC
 2SU Leaf Nodes [20, 21]
@@ -1352,12 +1352,12 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-4AC Leaf Nodes [17, 28]
-4AC: New Longest Valid Path Found: [17, 18, 27, 28]
-4AC path [17, 18, 27, 28]
-Found path: N3-C4-C5-C6
-Setting double bond: N3 = C4
+4AC Leaf Nodes [28, 17]
+4AC: New Longest Valid Path Found: [28, 27, 18, 17]
+4AC path [28, 27, 18, 17]
+Found path: C6-C5-C4-N3
 Setting double bond: C5 = C6
+Setting double bond: N3 = C4
 Lib to Template Success: 4AC
 Molecule doesn't contain wanted_smarts: [O+0X2h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [O+0X2h1] -> linker label for 3-prime will not be made. 
@@ -1375,12 +1375,12 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-4MC Leaf Nodes [17, 26]
-4MC: New Longest Valid Path Found: [17, 18, 25, 26]
-4MC path [17, 18, 25, 26]
-Found path: N3-C4-C5-C6
-Setting double bond: N3 = C4
+4MC Leaf Nodes [26, 17]
+4MC: New Longest Valid Path Found: [26, 25, 18, 17]
+4MC path [26, 25, 18, 17]
+Found path: C6-C5-C4-N3
 Setting double bond: C5 = C6
+Setting double bond: N3 = C4
 Lib to Template Success: 4MC
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -1407,12 +1407,12 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  4MC
-4SU Leaf Nodes [21, 18]
-4SU: New Longest Valid Path Found: [21, 20, 18]
-4SU path [21, 20, 18]
-Found path: C6-C5-C4
-Setting double bond: C5 = C6
-Setting C=[N+]: C4 - N3
+4SU Leaf Nodes [18, 21]
+4SU: New Longest Valid Path Found: [18, 20, 21]
+4SU path [18, 20, 21]
+Found path: C4-C5-C6
+Setting double bond: C4 = C5
+Setting C=[N+]: C6 - N1
 Error during template generation for:  4SU
 Corrupt atomic number for S4 in 4SU
 52U Leaf Nodes [20, 21]
@@ -1478,12 +1478,12 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  5DU
-5FC Leaf Nodes [23, 17]
-5FC: New Longest Valid Path Found: [23, 22, 18, 17]
-5FC path [23, 22, 18, 17]
-Found path: C6-C5-C4-N3
-Setting double bond: C5 = C6
+5FC Leaf Nodes [17, 23]
+5FC: New Longest Valid Path Found: [17, 18, 22, 23]
+5FC path [17, 18, 22, 23]
+Found path: N3-C4-C5-C6
 Setting double bond: N3 = C4
+Setting double bond: C5 = C6
 Lib to Template Success: 5FC
 Molecule doesn't contain wanted_smarts: [O+0X2h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [O+0X2h1] -> linker label for 3-prime will not be made. 
@@ -1582,13 +1582,13 @@ Setting double bond: C5 = C6
 Error during template generation for:  5TU
 Corrupt atomic number for S26 in 5TU
 66A Leaf Nodes [15]
-66A: New Longest Valid Path Found: [15, 16, 17, 18, 42, 43, 44, 45]
-66A path [15, 16, 17, 18, 42, 43, 44, 45]
-Found path: C8-N7-C5-C6-N1-C2-N3-C4
+66A: New Longest Valid Path Found: [18, 42, 43, 44, 45, 17, 16, 15]
+66A path [18, 42, 43, 44, 45, 17, 16, 15]
+Found path: C6-N1-C2-N3-C4-C5-N7-C8
+Setting double bond: C6 = N1
+Setting double bond: C2 = N3
+Setting double bond: C5 = C4
 Setting double bond: N7 = C8
-Setting double bond: C5 = C6
-Setting double bond: N1 = C2
-Setting double bond: N3 = C4
 Lib to Template Success: 66A
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -1614,13 +1614,13 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  66A
 6AA Leaf Nodes [15]
-6AA: New Longest Valid Path Found: [15, 16, 17, 18, 27, 28, 29, 30]
-6AA path [15, 16, 17, 18, 27, 28, 29, 30]
-Found path: C8-N7-C5-C6-N1-C2-N3-C4
-Setting double bond: N7 = C8
-Setting double bond: C5 = C6
-Setting double bond: N1 = C2
+6AA: New Longest Valid Path Found: [30, 29, 28, 27, 18, 17, 16, 15]
+6AA path [30, 29, 28, 27, 18, 17, 16, 15]
+Found path: C4-N3-C2-N1-C6-C5-N7-C8
 Setting double bond: N3 = C4
+Setting double bond: N1 = C2
+Setting double bond: C5 = C6
+Setting double bond: N7 = C8
 Lib to Template Success: 6AA
 6GA Leaf Nodes [15]
 6GA: New Longest Valid Path Found: [34, 33, 32, 31, 18, 17, 16, 15]
@@ -1645,13 +1645,13 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  6GA
 6IA Leaf Nodes [15]
-6IA: New Longest Valid Path Found: [15, 16, 17, 18, 35, 36, 37, 38]
-6IA path [15, 16, 17, 18, 35, 36, 37, 38]
-Found path: C8-N7-C5-C6-N1-C2-N3-C4
+6IA: New Longest Valid Path Found: [18, 35, 36, 37, 38, 17, 16, 15]
+6IA path [18, 35, 36, 37, 38, 17, 16, 15]
+Found path: C6-N1-C2-N3-C4-C5-N7-C8
+Setting double bond: C6 = N1
+Setting double bond: C2 = N3
+Setting double bond: C5 = C4
 Setting double bond: N7 = C8
-Setting double bond: C5 = C6
-Setting double bond: N1 = C2
-Setting double bond: N3 = C4
 6IA Leaf Nodes [22, 23]
 6IA: New Longest Valid Path Found: [22, 23]
 6IA path [22, 23]
@@ -1675,13 +1675,13 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 6MA Leaf Nodes [15]
-6MA: New Longest Valid Path Found: [15, 16, 17, 18, 25, 26, 27, 28]
-6MA path [15, 16, 17, 18, 25, 26, 27, 28]
-Found path: C8-N7-C5-C6-N1-C2-N3-C4
+6MA: New Longest Valid Path Found: [18, 25, 26, 27, 28, 17, 16, 15]
+6MA path [18, 25, 26, 27, 28, 17, 16, 15]
+Found path: C6-N1-C2-N3-C4-C5-N7-C8
+Setting double bond: N1 = C6
+Setting double bond: C2 = N3
+Setting double bond: C5 = C4
 Setting double bond: N7 = C8
-Setting double bond: C5 = C6
-Setting double bond: N1 = C2
-Setting double bond: N3 = C4
 Lib to Template Success: 6MA
 Molecule doesn't contain wanted_smarts: [O+0X2h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [O+0X2h1] -> linker label for 3-prime will not be made. 
@@ -1764,18 +1764,18 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  BCU
-BUG Leaf Nodes [21, 28]
-BUG: New Longest Valid Path Found: [21, 22, 23, 28]
-BUG path [21, 22, 23, 28]
-Found path: C2-N2-C12-C13
-Setting double bond: C2 = N2
-Setting double bond: C13 = C12
 BUG Leaf Nodes [45, 15]
 BUG: New Longest Valid Path Found: [45, 17, 16, 15]
 BUG path [45, 17, 16, 15]
 Found path: C4-C5-N7-C8
 Setting double bond: C5 = C4
 Setting double bond: N7 = C8
+BUG Leaf Nodes [28, 21]
+BUG: New Longest Valid Path Found: [28, 23, 22, 21]
+BUG path [28, 23, 22, 21]
+Found path: C13-C12-N2-C2
+Setting double bond: C13 = C12
+Setting double bond: C2 = N2
 Lib to Template Success: BUG
 Atom # 0 (N) in mol doesn't have implicit Hs -> continue with next atom... 
 Molecule doesn't contain wanted_smarts: [NX3h1] -> continue with next pattern... 
@@ -1850,12 +1850,12 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 DMA Leaf Nodes [15]
-DMA: New Longest Valid Path Found: [31, 30, 29, 28, 18, 17, 16, 15]
-DMA path [31, 30, 29, 28, 18, 17, 16, 15]
-Found path: C4-N3-C2-N1-C6-C5-N7-C8
-Setting double bond: N3 = C4
-Setting double bond: N1 = C2
-Setting double bond: C5 = C6
+DMA: New Longest Valid Path Found: [18, 28, 29, 30, 31, 17, 16, 15]
+DMA path [18, 28, 29, 30, 31, 17, 16, 15]
+Found path: C6-N1-C2-N3-C4-C5-N7-C8
+Setting double bond: C6 = N1
+Setting double bond: C2 = N3
+Setting double bond: C5 = C4
 Setting double bond: N7 = C8
 Lib to Template Success: DMA
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -1870,13 +1870,13 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  DMA
-DMG Leaf Nodes [21, 15]
-DMG: New Longest Valid Path Found: [21, 31, 32, 17, 16, 15]
-DMG path [21, 31, 32, 17, 16, 15]
-Found path: C2-N3-C4-C5-N7-C8
-Setting double bond: C2 = N3
-Setting double bond: C4 = C5
+DMG Leaf Nodes [15, 21]
+DMG: New Longest Valid Path Found: [15, 16, 17, 32, 31, 21]
+DMG path [15, 16, 17, 32, 31, 21]
+Found path: C8-N7-C5-C4-N3-C2
 Setting double bond: N7 = C8
+Setting double bond: C4 = C5
+Setting double bond: C2 = N3
 Lib to Template Success: DMG
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
 Molecule doesn't contain wanted_smarts: [OH][PX4](=O)([O])[OX2][CX4] -> continue with next pattern... 
@@ -1904,18 +1904,18 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  DMU
-DWG Leaf Nodes [15, 31]
-DWG: New Longest Valid Path Found: [15, 16, 17, 31]
-DWG path [15, 16, 17, 31]
-Found path: C8-N7-C5-C4
-Setting double bond: N7 = C8
+DWG Leaf Nodes [31, 15]
+DWG: New Longest Valid Path Found: [31, 17, 16, 15]
+DWG path [31, 17, 16, 15]
+Found path: C4-C5-N7-C8
 Setting double bond: C5 = C4
-DWG Leaf Nodes [28, 21]
-DWG: New Longest Valid Path Found: [28, 23, 22, 21]
-DWG path [28, 23, 22, 21]
-Found path: C12-C11-N2-C2
-Setting double bond: C12 = C11
+Setting double bond: N7 = C8
+DWG Leaf Nodes [21, 28]
+DWG: New Longest Valid Path Found: [21, 22, 23, 28]
+DWG path [21, 22, 23, 28]
+Found path: C2-N2-C11-C12
 Setting double bond: C2 = N2
+Setting double bond: C12 = C11
 Lib to Template Success: DWG
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -1984,13 +1984,13 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  HCU
 HIA Leaf Nodes [15]
-HIA: New Longest Valid Path Found: [18, 36, 37, 38, 39, 17, 16, 15]
-HIA path [18, 36, 37, 38, 39, 17, 16, 15]
-Found path: C6-N1-C2-N3-C4-C5-N7-C8
-Setting double bond: C6 = N1
-Setting double bond: C2 = N3
-Setting double bond: C5 = C4
+HIA: New Longest Valid Path Found: [15, 16, 17, 18, 36, 37, 38, 39]
+HIA path [15, 16, 17, 18, 36, 37, 38, 39]
+Found path: C8-N7-C5-C6-N1-C2-N3-C4
 Setting double bond: N7 = C8
+Setting double bond: C5 = C6
+Setting double bond: N1 = C2
+Setting double bond: N3 = C4
 HIA Leaf Nodes [24, 26]
 HIA: New Longest Valid Path Found: [24, 26]
 HIA path [24, 26]
@@ -2052,12 +2052,12 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  HNA
-HWG Leaf Nodes [55, 15]
-HWG: New Longest Valid Path Found: [55, 17, 16, 15]
-HWG path [55, 17, 16, 15]
-Found path: C4-C5-N7-C8
-Setting double bond: C5 = C4
+HWG Leaf Nodes [15, 55]
+HWG: New Longest Valid Path Found: [15, 16, 17, 55]
+HWG path [15, 16, 17, 55]
+Found path: C8-N7-C5-C4
 Setting double bond: N7 = C8
+Setting double bond: C5 = C4
 HWG Leaf Nodes [21, 28]
 HWG: New Longest Valid Path Found: [21, 22, 23, 28]
 HWG path [21, 22, 23, 28]
@@ -2098,18 +2098,18 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  INO
-IWG Leaf Nodes [34, 15]
-IWG: New Longest Valid Path Found: [34, 17, 16, 15]
-IWG path [34, 17, 16, 15]
-Found path: C4-C5-N7-C8
-Setting double bond: C5 = C4
+IWG Leaf Nodes [15, 34]
+IWG: New Longest Valid Path Found: [15, 16, 17, 34]
+IWG path [15, 16, 17, 34]
+Found path: C8-N7-C5-C4
 Setting double bond: N7 = C8
-IWG Leaf Nodes [21, 28]
-IWG: New Longest Valid Path Found: [21, 22, 23, 28]
-IWG path [21, 22, 23, 28]
-Found path: C2-N2-C11-C12
-Setting double bond: C2 = N2
+Setting double bond: C5 = C4
+IWG Leaf Nodes [28, 21]
+IWG: New Longest Valid Path Found: [28, 23, 22, 21]
+IWG path [28, 23, 22, 21]
+Found path: C12-C11-N2-C2
 Setting double bond: C12 = C11
+Setting double bond: C2 = N2
 Lib to Template Success: IWG
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -2124,13 +2124,13 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  IWG
-K2C Leaf Nodes [15, 22]
-K2C: New Longest Valid Path Found: [15, 16, 17, 21, 22]
-K2C path [15, 16, 17, 21, 22]
-Found path: C2-N3-C4-C5-C6
-Setting double bond: N3 = C2
-Setting double bond: C4 = C5
-Setting C=[N+]: C6 - N1
+K2C Leaf Nodes [22, 15]
+K2C: New Longest Valid Path Found: [22, 21, 17, 16, 15]
+K2C path [22, 21, 17, 16, 15]
+Found path: C6-C5-C4-N3-C2
+Setting double bond: C5 = C6
+Setting double bond: N3 = C4
+Setting C=[N+]: C2 - N1
 Lib to Template Success: K2C
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -2169,16 +2169,16 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-M2A Leaf Nodes [26, 21, 18]
+M2A Leaf Nodes [18, 26, 21]
 too many leaf nodes
-{26: 3, 21: 1, 18: 2}
+{18: 2, 26: 3, 21: 1}
 Setting C=[N+]: C6 - N6
-M2A: New Longest Valid Path Found: [26, 27, 28, 20, 19, 18]
-M2A path [26, 27, 28, 20, 19, 18]
-Found path: C2-N3-C4-C5-N7-C8
-Setting double bond: C2 = N3
-Setting double bond: C4 = C5
+M2A: New Longest Valid Path Found: [18, 19, 20, 28, 27, 26]
+M2A path [18, 19, 20, 28, 27, 26]
+Found path: C8-N7-C5-C4-N3-C2
 Setting double bond: C8 = N7
+Setting double bond: C5 = C4
+Setting double bond: C2 = N3
 Lib to Template Success: M2A
 Molecule breaks into fragments during the deleterious editing of M2A_ -> skipping the vaiant... 
 Molecule breaks into fragments during the deleterious editing of M2A_3 -> skipping the vaiant... 
@@ -2214,12 +2214,12 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  M3U
-M4C Leaf Nodes [20, 29]
-M4C: New Longest Valid Path Found: [20, 21, 28, 29]
-M4C path [20, 21, 28, 29]
-Found path: N3-C4-C5-C6
-Setting double bond: N3 = C4
+M4C Leaf Nodes [29, 20]
+M4C: New Longest Valid Path Found: [29, 28, 21, 20]
+M4C path [29, 28, 21, 20]
+Found path: C6-C5-C4-N3
 Setting double bond: C5 = C6
+Setting double bond: N3 = C4
 Lib to Template Success: M4C
 Molecule doesn't contain wanted_smarts: [O+0X2h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [O+0X2h1] -> linker label for 3-prime will not be made. 
@@ -2237,12 +2237,12 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
-MAC Leaf Nodes [31, 20]
-MAC: New Longest Valid Path Found: [31, 30, 21, 20]
-MAC path [31, 30, 21, 20]
-Found path: C6-C5-C4-N3
-Setting double bond: C5 = C6
+MAC Leaf Nodes [20, 31]
+MAC: New Longest Valid Path Found: [20, 21, 30, 31]
+MAC path [20, 21, 30, 31]
+Found path: N3-C4-C5-C6
 Setting double bond: N3 = C4
+Setting double bond: C5 = C6
 Lib to Template Success: MAC
 Molecule contains unexpected elements -> template for MAC will be None. 
 Molecule doesn't contain wanted_smarts: [OH][PX4](=O)([O])[OX2][CX4] -> continue with next pattern... 
@@ -2338,13 +2338,13 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  MFC
 MMA Leaf Nodes [18]
-MMA: New Longest Valid Path Found: [21, 28, 29, 30, 31, 20, 19, 18]
-MMA path [21, 28, 29, 30, 31, 20, 19, 18]
-Found path: C6-N1-C2-N3-C4-C5-N7-C8
-Setting double bond: N1 = C6
-Setting double bond: C2 = N3
-Setting double bond: C5 = C4
+MMA: New Longest Valid Path Found: [18, 19, 20, 21, 28, 29, 30, 31]
+MMA path [18, 19, 20, 21, 28, 29, 30, 31]
+Found path: C8-N7-C5-C6-N1-C2-N3-C4
 Setting double bond: C8 = N7
+Setting double bond: C5 = C6
+Setting double bond: N1 = C2
+Setting double bond: N3 = C4
 Lib to Template Success: MMA
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -2398,13 +2398,13 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  MMG
-MMI Leaf Nodes [24, 18]
-MMI: New Longest Valid Path Found: [24, 25, 26, 20, 19, 18]
-MMI path [24, 25, 26, 20, 19, 18]
-Found path: C2-N3-C4-C5-N7-C8
-Setting double bond: C2 = N3
-Setting double bond: C4 = C5
+MMI Leaf Nodes [18, 24]
+MMI: New Longest Valid Path Found: [18, 19, 20, 26, 25, 24]
+MMI path [18, 19, 20, 26, 25, 24]
+Found path: C8-N7-C5-C4-N3-C2
 Setting double bond: C8 = N7
+Setting double bond: C4 = C5
+Setting double bond: C2 = N3
 Lib to Template Success: MMI
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -2439,12 +2439,12 @@ Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern...
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  MMU
 MRA Leaf Nodes [18]
-MRA: New Longest Valid Path Found: [28, 27, 26, 25, 21, 20, 19, 18]
-MRA path [28, 27, 26, 25, 21, 20, 19, 18]
-Found path: C4-N3-C2-N1-C6-C5-N7-C8
-Setting double bond: N3 = C4
-Setting double bond: N1 = C2
-Setting double bond: C5 = C6
+MRA: New Longest Valid Path Found: [21, 25, 26, 27, 28, 20, 19, 18]
+MRA path [21, 25, 26, 27, 28, 20, 19, 18]
+Found path: C6-N1-C2-N3-C4-C5-N7-C8
+Setting double bond: N1 = C6
+Setting double bond: C2 = N3
+Setting double bond: C4 = C5
 Setting double bond: C8 = N7
 Lib to Template Success: MRA
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
@@ -2618,12 +2618,12 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  MTG
-N2G Leaf Nodes [21, 17]
-N2G: New Longest Valid Path Found: [21, 31, 32, 17]
-N2G path [21, 31, 32, 17]
-Found path: C2-N3-C4-C5
-Setting double bond: C2 = N3
+N2G Leaf Nodes [17, 21]
+N2G: New Longest Valid Path Found: [17, 32, 31, 21]
+N2G path [17, 32, 31, 21]
+Found path: C5-C4-N3-C2
 Setting double bond: C4 = C5
+Setting double bond: C2 = N3
 Setting C=[N+]: C8 - N9
 Lib to Template Success: N2G
 Molecule doesn't contain wanted_smarts: [O+0X2h1] -> continue with next pattern... 
@@ -2727,12 +2727,12 @@ PBG path [28, 23, 22, 21]
 Found path: C13-C12-N2-C2
 Setting double bond: C13 = C12
 Setting double bond: C2 = N2
-PBG Leaf Nodes [15, 56]
-PBG: New Longest Valid Path Found: [15, 16, 17, 56]
-PBG path [15, 16, 17, 56]
-Found path: C8-N7-C5-C4
-Setting double bond: N7 = C8
+PBG Leaf Nodes [56, 15]
+PBG: New Longest Valid Path Found: [56, 17, 16, 15]
+PBG path [56, 17, 16, 15]
+Found path: C4-C5-N7-C8
 Setting double bond: C4 = C5
+Setting double bond: N7 = C8
 Lib to Template Success: PBG
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
 Molecule doesn't contain wanted_smarts: [OH][PX4](=O)([O])[OX2][CX4] -> continue with next pattern... 
@@ -2793,13 +2793,13 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  QGG
-QMG Leaf Nodes [21, 15]
-QMG: New Longest Valid Path Found: [21, 25, 26, 17, 16, 15]
-QMG path [21, 25, 26, 17, 16, 15]
-Found path: C2-N3-C4-C5-C7-C8
-Setting double bond: N3 = C2
-Setting double bond: C5 = C4
+QMG Leaf Nodes [15, 21]
+QMG: New Longest Valid Path Found: [15, 16, 17, 26, 25, 21]
+QMG path [15, 16, 17, 26, 25, 21]
+Found path: C8-C7-C5-C4-N3-C2
 Setting double bond: C7 = C8
+Setting double bond: C5 = C4
+Setting double bond: N3 = C2
 QMG Leaf Nodes [58, 59]
 QMG: New Longest Valid Path Found: [58, 59]
 QMG path [58, 59]
@@ -2883,13 +2883,13 @@ Setting C=[N+]: C2 - N1
 Error during template generation for:  SEU
 Corrupt atomic number for Se in SEU
 SIA Leaf Nodes [15]
-SIA: New Longest Valid Path Found: [15, 16, 17, 18, 36, 37, 38, 39]
-SIA path [15, 16, 17, 18, 36, 37, 38, 39]
-Found path: C8-N7-C5-C6-N1-C2-N3-C4
+SIA: New Longest Valid Path Found: [18, 36, 37, 38, 39, 17, 16, 15]
+SIA path [18, 36, 37, 38, 39, 17, 16, 15]
+Found path: C6-N1-C2-N3-C4-C5-N7-C8
+Setting double bond: C6 = N1
+Setting double bond: C2 = N3
+Setting double bond: C5 = C4
 Setting double bond: N7 = C8
-Setting double bond: C5 = C6
-Setting double bond: N1 = C2
-Setting double bond: N3 = C4
 SIA Leaf Nodes [24, 26]
 SIA: New Longest Valid Path Found: [24, 26]
 SIA path [24, 26]
@@ -2945,13 +2945,13 @@ Setting C=[N+]: C2 - N1
 Error during template generation for:  SMU
 Corrupt atomic number for S2 in SMU
 SPA Leaf Nodes [15]
-SPA: New Longest Valid Path Found: [18, 35, 36, 37, 38, 17, 16, 15]
-SPA path [18, 35, 36, 37, 38, 17, 16, 15]
-Found path: C6-N1-C2-N3-C4-C5-N7-C8
-Setting double bond: C6 = N1
-Setting double bond: C2 = N3
-Setting double bond: C5 = C4
+SPA: New Longest Valid Path Found: [15, 16, 17, 18, 35, 36, 37, 38]
+SPA path [15, 16, 17, 18, 35, 36, 37, 38]
+Found path: C8-N7-C5-C6-N1-C2-N3-C4
 Setting double bond: N7 = C8
+Setting double bond: C5 = C6
+Setting double bond: N1 = C2
+Setting double bond: N3 = C4
 SPA Leaf Nodes [22, 23]
 SPA: New Longest Valid Path Found: [22, 23]
 SPA path [22, 23]
@@ -3005,18 +3005,18 @@ Setting double bond: C5 = C6
 Setting C=[N+]: C2 - N1
 Error during template generation for:  STU
 Corrupt atomic number for S2 in STU
-WBG Leaf Nodes [54, 15]
-WBG: New Longest Valid Path Found: [54, 17, 16, 15]
-WBG path [54, 17, 16, 15]
-Found path: C4-C5-N7-C8
-Setting double bond: C5 = C4
+WBG Leaf Nodes [15, 54]
+WBG: New Longest Valid Path Found: [15, 16, 17, 54]
+WBG path [15, 16, 17, 54]
+Found path: C8-N7-C5-C4
 Setting double bond: N7 = C8
-WBG Leaf Nodes [21, 28]
-WBG: New Longest Valid Path Found: [21, 22, 23, 28]
-WBG path [21, 22, 23, 28]
-Found path: C2-N2-C12-C13
-Setting double bond: C2 = N2
+Setting double bond: C5 = C4
+WBG Leaf Nodes [28, 21]
+WBG: New Longest Valid Path Found: [28, 23, 22, 21]
+WBG path [28, 23, 22, 21]
+Found path: C13-C12-N2-C2
 Setting double bond: C13 = C12
+Setting double bond: C2 = N2
 Lib to Template Success: WBG
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -3031,18 +3031,18 @@ Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not b
 Molecule doesn't contain wanted_smarts: [PX4h1] -> continue with next pattern... 
 Molecule doesn't contain pattern: [PX4h1] -> linker label for 5-prime will not be made. 
 No CCD template generated for:  WBG
-WMG Leaf Nodes [28, 21]
-WMG: New Longest Valid Path Found: [28, 23, 22, 21]
-WMG path [28, 23, 22, 21]
-Found path: C12-C11-N2-C2
-Setting double bond: C12 = C11
-Setting double bond: C2 = N2
-WMG Leaf Nodes [34, 15]
-WMG: New Longest Valid Path Found: [34, 17, 16, 15]
-WMG path [34, 17, 16, 15]
-Found path: C4-C5-N7-C8
-Setting double bond: C5 = C4
+WMG Leaf Nodes [15, 34]
+WMG: New Longest Valid Path Found: [15, 16, 17, 34]
+WMG path [15, 16, 17, 34]
+Found path: C8-N7-C5-C4
 Setting double bond: N7 = C8
+Setting double bond: C5 = C4
+WMG Leaf Nodes [21, 28]
+WMG: New Longest Valid Path Found: [21, 22, 23, 28]
+WMG path [21, 22, 23, 28]
+Found path: C2-N2-C11-C12
+Setting double bond: C2 = N2
+Setting double bond: C12 = C11
 Lib to Template Success: WMG
 Molecule doesn't contain matching atoms for acidic_proton_loc:{'[H][O][CX3](=O)': 0, '[H][O][SX4](=O)': 0, '[H][O][SX3](=O)': 0, '[H][O][PX4](=O)': 0, '[H][O][PX3](=O)': 0, '[H][O][CX3](=S)': 0, '[H][O][SX4](=S)': 0, '[H][SX2][a]': 0}-> deprotonate returning original mol... 
 Molecule doesn't contain the standard backbone of nucleotides or amino acids. -> no templates will be made. 
@@ -3053,12 +3053,12 @@ Traceback (most recent call last):
     raise RuntimeError(f"Corrupt atomic number for {atom.name} in {resname}")
 RuntimeError: Corrupt atomic number for C10 in WYG
 No CCD template generated for:  WMG
-WYG Leaf Nodes [15, 31]
-WYG: New Longest Valid Path Found: [15, 16, 17, 31]
-WYG path [15, 16, 17, 31]
-Found path: C8-N7-C5-C4
-Setting double bond: N7 = C8
+WYG Leaf Nodes [31, 15]
+WYG: New Longest Valid Path Found: [31, 17, 16, 15]
+WYG path [31, 17, 16, 15]
+Found path: C4-C5-N7-C8
 Setting double bond: C5 = C4
+Setting double bond: N7 = C8
 Setting C=[N+]: C2 - N1
 Setting C=[N+]: C11 - N2
 Error during template generation for:  WYG

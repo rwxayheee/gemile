@@ -55,7 +55,7 @@ def get_atom_idx_by_names(mol: Chem.Mol, wanted_names: set[str] = set()) -> set[
     wanted_atoms_by_names = {atom for atom in mol.GetAtoms() if atom.GetProp('atom_id') in wanted_names}
     names_not_found = wanted_names.difference({atom.GetProp('atom_id') for atom in wanted_atoms_by_names})
     if names_not_found: 
-        logger.warning(f"Molecule doesn't contain the requested atoms with names: {names_not_found} -> continue with found names... ")
+        logger.warning(f"{mol.GetProp('resname')} ::: Molecule doesn't contain the requested atoms with names: {names_not_found} -> continue with found names... ")
     return {atom.GetIdx() for atom in wanted_atoms_by_names}
 
 
@@ -71,11 +71,11 @@ def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str,
     tmol = Chem.MolFromSmarts(allowed_smarts)
     match_allowed = mol.GetSubstructMatches(tmol)
     if not match_allowed:
-        logger.warning(f"Molecule doesn't contain allowed_smarts: {allowed_smarts} -> no pattern-based action will be made. ")
+        logger.warning(f"{mol.GetProp('resname')} ::: Molecule doesn't contain allowed_smarts: {allowed_smarts} -> no pattern-based action will be made. ")
         return set()
     if len(match_allowed) > 1: 
         if not allow_multiple: 
-            logger.warning(f"Molecule contain multiple copies of allowed_smarts: {allowed_smarts} -> no pattern-based action will be made. ")
+            logger.warning(f"{mol.GetProp('resname')} ::: Molecule contain multiple copies of allowed_smarts: {allowed_smarts} -> no pattern-based action will be made. ")
             return set()
         else:
             match_allowed = {item for sublist in match_allowed for item in sublist}
@@ -87,7 +87,7 @@ def get_atom_idx_by_patterns(mol: Chem.Mol, allowed_smarts: str,
         lmol = Chem.MolFromSmarts(wanted_smarts)
         match_wanted = mol.GetSubstructMatches(lmol)
         if not match_wanted:
-            logger.warning(f"Molecule doesn't contain wanted_smarts: {wanted_smarts} -> continue with next pattern... ")
+            logger.warning(f"{mol.GetProp('resname')} ::: Molecule doesn't contain wanted_smarts: {wanted_smarts} -> continue with next pattern... ")
             continue
         for match_copy in match_wanted:
             match_in_copy = (idx for idx in match_copy if match_copy.index(idx) in wanted_smarts_loc[wanted_smarts])
@@ -116,7 +116,7 @@ def embed(mol: Chem.Mol, allowed_smarts: str,
     leaving_atoms_idx.update(get_atom_idx_by_patterns(mol, allowed_smarts, leaving_smarts_loc))
 
     if not leaving_atoms_idx:
-        logger.warning(f"No matched atoms to delete -> embed returning original mol...")
+        logger.warning(f"{mol.GetProp('resname')} ::: No matched atoms to delete -> embed returning original mol...")
         return mol
 
     if leaving_atoms_idx and alsoHs:
@@ -128,7 +128,9 @@ def embed(mol: Chem.Mol, allowed_smarts: str,
     for atom_idx in sorted(leaving_atoms_idx, reverse=True): 
         rwmol.RemoveAtom(atom_idx)
     rwmol.UpdatePropertyCache()
-    return rwmol.GetMol()
+    newmol = rwmol.GetMol()
+    newmol.SetProp("resname", mol.GetProp("resname"))
+    return newmol
 
 
 def cap(mol: Chem.Mol, allowed_smarts: str, 
@@ -146,7 +148,7 @@ def cap(mol: Chem.Mol, allowed_smarts: str,
     capping_atoms_idx.update(get_atom_idx_by_names(mol, capping_names))
     capping_atoms_idx.update(get_atom_idx_by_patterns(mol, allowed_smarts, capping_smarts_loc, allow_multiple = True))
     if not capping_atoms_idx:
-        logger.warning(f"No matched atoms to cap -> cap returning original mol...")
+        logger.warning(f"{mol.GetProp('resname')} ::: No matched atoms to cap -> cap returning original mol...")
         return mol
     
     def get_max_Hid(mol: Chem.Mol) -> int:
@@ -166,7 +168,7 @@ def cap(mol: Chem.Mol, allowed_smarts: str,
             parent_atom.SetFormalCharge(parent_atom.GetFormalCharge() + 1)
         needed_Hs = parent_atom.GetNumImplicitHs()
         if needed_Hs == 0:
-            logger.warning(f"Atom # {atom_idx} ({parent_atom.GetProp('atom_id')}) in mol doesn't have implicit Hs -> continue with next atom... ")
+            logger.warning(f"{mol.GetProp('resname')} ::: Atom # {atom_idx} ({parent_atom.GetProp('atom_id')}) in mol doesn't have implicit Hs -> continue with next atom... ")
         else:
             new_atom = Chem.Atom("H")
             new_atom.SetProp('atom_id', f"H{new_Hid}")
@@ -174,7 +176,9 @@ def cap(mol: Chem.Mol, allowed_smarts: str,
             new_idx = rwmol.AddAtom(new_atom)
             rwmol.AddBond(atom_idx, new_idx, Chem.BondType.SINGLE)
     rwmol.UpdatePropertyCache()
-    return rwmol.GetMol()
+    newmol = rwmol.GetMol()
+    newmol.SetProp("resname", mol.GetProp("resname"))
+    return newmol
 
 
 def deprotonate(mol: Chem.Mol, acidic_proton_loc: dict[str, int] = {}) -> Chem.Mol:
@@ -193,7 +197,7 @@ def deprotonate(mol: Chem.Mol, acidic_proton_loc: dict[str, int] = {}) -> Chem.M
         acidic_protons_idx.update(match[idx] for match in mol.GetSubstructMatches(qmol))
     
     if not acidic_protons_idx:
-        logger.warning(f"Molecule doesn't contain matching atoms for acidic_proton_loc:" + 
+        logger.warning(f"{mol.GetProp('resname')} ::: Molecule doesn't contain matching atoms for acidic_proton_loc:" + 
                         f"{acidic_proton_loc}" + 
                         f"-> deprotonate returning original mol... ")
         return mol
@@ -207,7 +211,9 @@ def deprotonate(mol: Chem.Mol, acidic_proton_loc: dict[str, int] = {}) -> Chem.M
             neighbor_atom.SetFormalCharge(neighbor_atom.GetFormalCharge() - 1)
     
     rwmol.UpdatePropertyCache()
-    return rwmol.GetMol()
+    newmol = rwmol.GetMol()
+    newmol.SetProp("resname", mol.GetProp("resname"))
+    return newmol
 
 
 def recharge(rwmol: Chem.RWMol) -> Chem.RWMol: 
@@ -238,7 +244,7 @@ def recharge(rwmol: Chem.RWMol) -> Chem.RWMol:
     nonmetal_coord_atoms = set(atom for v_set in metal_to_nonmetal_neighbors.values() for atom in v_set)
 
     if any(atom.GetFormalCharge() == 0 for atom in metal_atoms): 
-        logger.warning(f"Molecule contains metal with unspecified charge state -> charging nonmetal coordinated atoms...")
+        logger.warning(f"{rwmol.GetProp('resname')} ::: Molecule contains metal with unspecified charge state -> charging nonmetal coordinated atoms...")
         logger.warning(f"All metals will be neutralized and the nonmetal coordinated atoms will be charged according to their explicit valence. ")
         for atom in metal_atoms: 
             atom.SetFormalCharge(0)
@@ -250,7 +256,7 @@ def recharge(rwmol: Chem.RWMol) -> Chem.RWMol:
     # -> ionize (break bonds w/) and charge down nonmetal coordinated atoms
     # (metal ox state will be from input charge state)
     else: 
-        logger.warning(f"Molecule contains metal specified charge state -> ionizing metal-nonmetal coordinate bonds...")
+        logger.warning(f"{rwmol.GetProp('resname')} ::: Molecule contains metal specified charge state -> ionizing metal-nonmetal coordinate bonds...")
         logger.warning(f"All metal-nonmetal coordinate bonds will be polarized. ")
         metal_bonds = {bond.GetIdx(): (bond.GetBeginAtomIdx(), bond.GetEndAtomIdx()) 
                            for metal in metal_atoms for bond in metal.GetBonds()}
@@ -271,7 +277,9 @@ def recharge(rwmol: Chem.RWMol) -> Chem.RWMol:
 
     logger.warning(f"Total charge of the molecule after recharging: {sum(atom.GetFormalCharge() for atom in rwmol.GetAtoms())}")
 
-    return rwmol
+    newmol = rwmol.GetMol()
+    newmol.SetProp("resname", rwmol.GetProp("resname"))
+    return newmol
 
 
 # Attribute Formatters
@@ -438,7 +446,7 @@ class ChemicalComponent:
                     ):
                         # Update longest path, making sure to copy current_path
                         longest_path = list(current_path)
-                        print(f"{resname}: New Longest Valid Path Found: {longest_path}")
+                        print(f"{resname} ::: New Longest Valid Path Found: {longest_path}")
 
                     # Traverse neighbors
                     for neighbor in sorted(graph.neighbors(current_node)):  # Sorted for consistent traversal
@@ -463,7 +471,7 @@ class ChemicalComponent:
                         len(current_path) % 2 == 0 and
                         len(current_path) - 1 > len(longest_path)):
                         longest_path = list(current_path)
-                        print(f"{resname}: Loop Back to Start with Even Length: {longest_path}")
+                        print(f"{resname} ::: Loop Back to Start with Even Length: {longest_path}")
 
                 # Initialize node visit counts
                 node_visits = {node: 0 for node in graph.nodes}
@@ -513,10 +521,8 @@ class ChemicalComponent:
                 for idx, g in enumerate(sorted_isolated_subgraphs):
 
                     leaf_nodes = [node for node in g.nodes() if g.degree(node) == 1]
-                    print(resname, "Leaf Nodes", leaf_nodes)
 
                     if len(leaf_nodes) > 2: 
-                        print("too many leaf nodes")
                         three_degree_nodes = [node for node in g.nodes() if g.degree(node) == 3]
                         
                         distance = {}
@@ -527,7 +533,7 @@ class ChemicalComponent:
 
                         leaf_nodes_togo = [k for k in distance if distance[k]==1]
                         if len(leaf_nodes_togo) < len(leaf_nodes) - 2:
-                            raise RuntimeError("cannot sanitize bond path")
+                            raise RuntimeError(f"{resname} ::: Cannot sanitize bond path")
                         else:
                             for idx in leaf_nodes_togo[:len(leaf_nodes) - 2]:
                                 atom = atoms_in_residue[idx]
@@ -544,7 +550,7 @@ class ChemicalComponent:
                                                     bond.order = 2
                                                     if bond in unspec_bonds:
                                                         unspec_bonds.remove(bond)
-                                            print("Setting C=[N+]:", 
+                                            print(f"{resname} ::: Setting C=[N+]:", 
                                             atom.name, 
                                             "-", 
                                             fp.name,
@@ -554,7 +560,7 @@ class ChemicalComponent:
                     bond_path = find_longest_valid_path(g)
                     print(resname, "path", bond_path)
                     if len(bond_path)>=2: 
-                        print("Found path:", 
+                        print(f"{resname} ::: Found path:", 
                             "-".join([atoms_in_residue[atom_idx].name for atom_idx in bond_path]))
                         bonds_key_in_chain = [frozenset([i, j]) for i, j in zip(bond_path, bond_path[1:])]
                         double_bonds_keys = bonds_key_in_chain[0::2]
@@ -563,7 +569,7 @@ class ChemicalComponent:
                             bond.order = 2
                             if bond in unspec_bonds: 
                                 unspec_bonds.remove(bond)
-                            print("Setting double bond:", 
+                            print(f"{resname} ::: Setting double bond:", 
                                 atoms_in_residue[list(bond_idx)[0]].name, 
                                 "=", 
                                 atoms_in_residue[list(bond_idx)[1]].name,
@@ -585,7 +591,7 @@ class ChemicalComponent:
                                             bond = unspec_bonds_by_idx_tuple[bond_idx]
                                             if bond in unspec_bonds: 
                                                 unspec_bonds.remove(bond)
-                                    print("Setting C=[N+]:", 
+                                    print(f"{resname} ::: Setting C=[N+]:", 
                                     atom.name, 
                                     "-", 
                                     fp.name,
@@ -594,7 +600,7 @@ class ChemicalComponent:
                 for atom in residue.atoms:
                     if atom.atomic_number == 7 and num_current_valence(atom) > ref_valence[atom.atomic_number]: 
                         atom.formal_charge = 1
-                        print("Charging N+:",
+                        print(f"{resname} ::: Charging N+:",
                             atom.name, 
                             )
 
@@ -604,7 +610,7 @@ class ChemicalComponent:
                                 unspec_bonds.remove(bond)
                         
             if unspec_bonds: 
-                raise RuntimeError(f"Max attempts ({max_attempts}) reached. Unable to guess bond order. ")
+                raise RuntimeError(f"{resname} ::: Max attempts ({max_attempts}) reached. Unable to guess bond order. ")
 
             return residue
         
@@ -615,7 +621,7 @@ class ChemicalComponent:
         rwmol = Chem.RWMol()
         for atom in residue.atoms:
             if atom.atomic_number < 0:
-                raise RuntimeError(f"Corrupt atomic number for {atom.name} in {resname}")
+                raise RuntimeError(f"{resname} ::: Corrupt atomic number for {atom.name} in {resname}")
             rdkit_atom = Chem.Atom(atom.atomic_number)
             rdkit_atom.SetProp('atom_id', atom.name)
             rdkit_atom.SetFormalCharge(atom.formal_charge)
@@ -635,7 +641,7 @@ class ChemicalComponent:
 
         # Check if rwmol contains unexpected elements
         if mol_contains_unexpected_element(rwmol):
-            logger.warning(f"Molecule contains unexpected elements -> template for {resname} will be None. ")
+            logger.warning(f"{resname} ::: Molecule contains unexpected elements -> template for {resname} will be None. ")
             return None
         
         # Map atom_id (atom names) with rdkit idx
@@ -659,17 +665,18 @@ class ChemicalComponent:
         try:    
             rwmol.UpdatePropertyCache()
         except Exception as e:
-            logger.error(f"Failed to create rdkitmol from lib. Error: {e} -> template for {resname} will be None. ")
+            logger.error(f"{resname} ::: Failed to create rdkitmol from lib. Error: {e} -> template for {resname} will be None. ")
             return None
         
         # Check implicit Hs
         total_implicit_hydrogens = sum(atom.GetNumImplicitHs() for atom in rwmol.GetAtoms())
         if total_implicit_hydrogens > 0:
             print(resname, Chem.MolToSmiles(rwmol))
-            logger.error(f"rdkitmol from lib has implicit hydrogens. -> template for {resname} will be None. ")
+            logger.error(f"{resname} ::: rdkitmol from lib has implicit hydrogens. -> template for {resname} will be None. ")
             return None
 
         rdkit_mol = rwmol.GetMol()
+        rdkit_mol.SetProp("resname", resname)
             
         # Get Smiles with explicit Hs and ordered atom names
         smiles_exh, atom_name = get_smiles_with_atom_names(rdkit_mol)
@@ -715,7 +722,7 @@ class ChemicalComponent:
 
         # Check if rwmol contains unexpected elements
         if mol_contains_unexpected_element(rwmol):
-            logger.warning(f"Molecule contains unexpected elements -> template for {resname} will be None. ")
+            logger.warning(f"{resname} ::: Molecule contains unexpected elements -> template for {resname} will be None. ")
             return None
 
         # Map atom_id (atom names) with rdkit idx
@@ -748,23 +755,25 @@ class ChemicalComponent:
         try:
             rwmol = recharge(rwmol)
         except Exception as e:
-            logger.error(f"Failed to recharge rdkitmol. Error: {e} -> template for {resname} will be None. ")
+            logger.error(f"{resname} ::: Failed to recharge rdkitmol. Error: {e} -> template for {resname} will be None. ")
             return None
 
         # Finish eidting mol 
         try:    
             rwmol.UpdatePropertyCache()
         except Exception as e:
-            logger.error(f"Failed to create rdkitmol from cif. Error: {e} -> template for {resname} will be None. ")
+            logger.error(f"{resname} ::: Failed to create rdkitmol from cif. Error: {e} -> template for {resname} will be None. ")
             return None
         
         # Check implicit Hs
         total_implicit_hydrogens = sum(atom.GetNumImplicitHs() for atom in rwmol.GetAtoms())
         if total_implicit_hydrogens > 0:
-            logger.error(f"rdkitmol from cif has implicit hydrogens. -> template for {resname} will be None. ")
+            logger.error(f"{resname} ::: rdkitmol from cif has implicit hydrogens. -> template for {resname} will be None. ")
             return None
 
         rdkit_mol = rwmol.GetMol()
+        # Set property name for references in future error msg
+        rdkit_mol.SetProp("resname", resname)
             
         # Get Smiles with explicit Hs and ordered atom names
         smiles_exh, atom_name = get_smiles_with_atom_names(rdkit_mol)
@@ -806,9 +815,9 @@ class ChemicalComponent:
                                                 wanted_smarts_loc = {pattern: {0}})
             atoms_in_mol = [atom for atom in self.rdkit_mol.GetAtoms()]
             if not atom_idx:
-                logger.warning(f"Molecule doesn't contain pattern: {pattern} -> linker label for {pattern_to_label_mapping[pattern]} will not be made. ")
+                logger.warning(f"{self.rdkit_mol.GetProp('resname')} ::: Molecule doesn't contain pattern: {pattern} -> linker label for {pattern_to_label_mapping[pattern]} will not be made. ")
             elif len(atom_idx) > 1:
-                logger.warning(f"Molecule contain multiple copies of pattern: {pattern} -> linker label for {pattern_to_label_mapping[pattern]} will not be made. ")
+                logger.warning(f"{self.rdkit_mol.GetProp('resname')} ::: Molecule contain multiple copies of pattern: {pattern} -> linker label for {pattern_to_label_mapping[pattern]} will not be made. ")
             else:
                 atom_idx = next(iter(atom_idx))
                 name = atoms_in_mol[atom_idx].GetProp('atom_id')
@@ -986,12 +995,15 @@ def add_variants(cc_orig: ChemicalComponent, cc_list: list[ChemicalComponent] = 
             cc.resname += suffix
             logger.info(f"*** using CCD residue {cc.parent} to construct {cc.resname} ***")
 
+            print(f"Pre-Embedding {cc.resname} ::: ", Chem.MolToSmiles(cc.rdkit_mol))
+
             cc = (
                 cc
                 .make_canonical(acidic_proton_loc = acidic_proton_loc) 
                 .make_embedded(allowed_smarts = embed_allowed_smarts, 
                                leaving_smarts_loc = variant_dict[suffix][0])
                 )
+            print(f"Post-Embedding {cc.resname} ::: ", Chem.MolToSmiles(cc.rdkit_mol))
             if len(rdmolops.GetMolFrags(cc.rdkit_mol))>1:
                 logger.warning(f"Molecule breaks into fragments during the deleterious editing of {cc.resname} -> skipping the vaiant... ")
                 continue
@@ -1004,6 +1016,7 @@ def add_variants(cc_orig: ChemicalComponent, cc_list: list[ChemicalComponent] = 
                 .make_pretty_smiles()
                 .make_link_labels_from_patterns(pattern_to_label_mapping = pattern_to_label_mapping_standard)
                 )
+            print(f"Post-Capping {cc.resname} ::: ", Chem.MolToSmiles(cc.rdkit_mol))
 
             try:
                 cc.ResidueTemplate_check()

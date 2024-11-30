@@ -1,4 +1,5 @@
 import os
+os.environ['PYTHONUNBUFFERED'] = '1'
 from chemtempgen import *
 import traceback
 
@@ -27,29 +28,24 @@ NA_lib = (leap_lib_path+x for x in (
 
 class Amber_AA_recipe: 
 
-    embed_allowed_smarts = "[NX3,NX4]([H])([H])[CX4][CX3](=O)[X]"
-    cap_allowed_smarts = "[NH2,NH3][CX4][CX3](=O)"
+    recipe_tag = "Amber_AA"
+    embed_options = [("[NX4]([#1])([#1])([#1])[CX4][CX3](=O)[O,#1]", (1, 7)),
+                     ("[NX3,NX4]([#1])([#1])[CX4][CX3](=O)[O,#1]", (1, 6)),
+                     ("[NX3]([#1])[CX4][CX3](=O)[O,#1]", (1, 5))]
+    cap_option = ("[NX2,NX3][CX4][CX3](=O)", {0})
+    cap_allowed_smarts = cap_option[0]
     cap_protonate = True
     pattern_to_label_mapping_standard = {'[NX3h1]': 'N-term', '[CX3h1]': 'C-term'}
 
-    variant_dict = {
-            "":  ({"[NX3]([H])([H])[CX4][CX3](=O)[X]": {1, 6}}, None), # embedded amino acid
-            "_N": ({"[NX3]([H])([H])[CX4][CX3](=O)[X]": {6}}, {"[NH2,NH3][CX4][CX3](=O)": {0}}), # N-term amino acid
-            "_C": ({"[NX3]([H])([H])[CX4][CX3](=O)[X]": {1}}, None), # C-term amino acid
-        }
-
 class Amber_NA_recipe: 
-        
-    embed_allowed_smarts = "[X][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]"
-    cap_allowed_smarts = "[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]"
+    
+    recipe_tag = "Amber_NA"
+    embed_options = [("[OH,O-,#1][PX4](=O)([O])[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]", (0, 12)),
+                     ("[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]", (8,))]
+    cap_option = ("[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]", {0})
+    cap_allowed_smarts = cap_option[0]
     cap_protonate = False
     pattern_to_label_mapping_standard = {'[PX4h1]': '5-prime', '[O+0X2h1]': '3-prime'}
-    variant_dict = {
-            "_":  ({"[PX4]([H])(=O)([O])[OX2][CX4]": {1}, "[OH][PX4](=O)([O])[OX2][CX4]": {0}, "[O-][PX4](=O)([O-])[OX2][CX4]": {0}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), # embedded nucleotide 
-            "_3": ({"[PX4]([H])(=O)([O])[OX2][CX4]": {1}, "[OH][PX4](=O)([O])[OX2][CX4]": {0}, "[O-][PX4](=O)([O-])[OX2][CX4]": {0}}, None), # 3' end nucleotide 
-            "_5p": ({"[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, None), # 5' end nucleotide (extra phosphate than canonical X5)
-            "_5": ({"[X][PX4](=O)([O])[OX2][CX4]": {0,1,2,3}, "[CX4]1[OX2][CX4][CX4][CX4]1[OX2][H]": {6}}, {"[OX2][CX4][CX4]1[OX2][CX4][CX4][CX4]1[OX2]": {0}}), # 5' end nucleoside (canonical X5 in Amber)
-        }
 
 # Check conflicts
 default_json_fn = '/Users/amyhe/Desktop/0_forks/gemile/residue_chem_templates.vanila.json'
@@ -83,13 +79,36 @@ for recipe, libfiles in [(Amber_AA_recipe, AA_lib), (Amber_NA_recipe, NA_lib)]:
                     num_failures += 1
                 
                 else:
-                    print("Lib to Template Success:", resname)
                     
+                    for embed_option in recipe.embed_options: 
+                        embed_allowed_smarts = embed_option[0]
+                        matches = cc_from_lib.rdkit_mol.GetSubstructMatches(Chem.MolFromSmarts(embed_allowed_smarts))
+                        print(len(matches), embed_allowed_smarts, Chem.MolToSmiles(cc_from_lib.rdkit_mol))
+                        if len(matches)==1:
+                            break
+                    print("Lib to Template Success:", resname)
+                    print(f"{embed_allowed_smarts=}")
+                    print(f"{recipe.cap_allowed_smarts=}")
+                    if recipe.recipe_tag == "Amber_AA": 
+                        variant_dict = {
+                            "":  ({embed_allowed_smarts: embed_option[1]}, None), # embedded amino acid
+                            "_N": ({embed_allowed_smarts: {embed_option[1][1]}}, {recipe.cap_option[0]: recipe.cap_option[1]}), # N-term amino acid
+                            "_C": ({embed_allowed_smarts: {embed_option[1][0]}}, None), # C-term amino acid
+                        }
+                    if recipe.recipe_tag == "Amber_NA": 
+                        variant_dict = {
+                            "_":  ({embed_allowed_smarts: embed_option[1]}, None), # embedded nucleotide / nucleoside
+                        }
+                        if len(embed_option[1]) > 1: 
+                            variant_dict.update({"_3": ({embed_allowed_smarts: {embed_option[1][0]}}, None)}) # 3' end nucleotide 
+                            variant_dict.update({"_5p": ({embed_allowed_smarts: {embed_option[1][1]}}, None)}) # 5' end nucleotide (extra phosphate than canonical X5)
+                            variant_dict.update({"_5": ({embed_allowed_smarts: {0,1,2,3,embed_option[1][1]}}, {recipe.cap_option[0]: recipe.cap_option[1]})}) # 5' end nucleotide 
+
                     cc_variants = add_variants(cc_orig = cc_from_lib, cc_list = [], 
-                                embed_allowed_smarts = recipe.embed_allowed_smarts, 
+                                embed_allowed_smarts = embed_allowed_smarts, 
                                 cap_allowed_smarts = recipe.cap_allowed_smarts, cap_protonate = recipe.cap_protonate, 
                                 pattern_to_label_mapping_standard = recipe.pattern_to_label_mapping_standard, 
-                                variant_dict = recipe.variant_dict, 
+                                variant_dict = variant_dict, 
                                 acidic_proton_loc = {}
                                 )
                     
